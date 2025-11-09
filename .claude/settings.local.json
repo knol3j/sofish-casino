@@ -20,7 +20,13 @@
       "Bash(git add:*)",
       "Bash(NUL)",
       "Bash(test:*)",
-      "Bash(cat:*)"
+      "Bash(cat:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nInitial commit: Sofish Casino Platform\n\nFull-stack virtual casino with professional animations\n\nFeatures:\n- Professional slot machines with requestAnimationFrame physics\n- Endorphina Satoshi''s Secret provider game (50,000x max win)\n- Roulette with realistic wheel deceleration\n- Blackjack with 3D card flip animations\n- Fishing game\n- User authentication and balance management\n- Daily bonuses and VIP system\n- Leaderboards\n\nTech Stack:\n- Frontend: React + TypeScript + Vite\n- Backend: Cloudflare Workers + Hono + D1\n- Animations: 60fps requestAnimationFrame with elastic easing\n\n🤖 Generated with Claude Code\nEOF\n)\")",
+      "Bash(gh:*)",
+      "Bash(git config:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(npm run deploy:*)"
     ],
     "deny": [],
     "ask": []

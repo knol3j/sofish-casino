@@ -24,11 +24,6 @@ export function EndorphinaSatoshisSecret() {
   const VISIBLE_SYMBOLS = 3
   const REEL_HEIGHT = SYMBOL_HEIGHT * VISIBLE_SYMBOLS
 
-  // Get symbol at position
-  const getSymbolAtPosition = (reelIndex: number, position: number) => {
-    const symbolIndex = Math.floor(position / SYMBOL_HEIGHT) % symbols.length
-    return symbols[symbolIndex]
-  }
 
   // Animated win counter
   useEffect(() => {
@@ -110,7 +105,6 @@ export function EndorphinaSatoshisSecret() {
     const startTime = Date.now()
     const startPosition = reelPositions[reelIndex]
     const distance = targetPosition - startPosition + (symbols.length * SYMBOL_HEIGHT * 3)
-    const bounceAmount = SYMBOL_HEIGHT * 0.15 // 15% bounce
 
     const animate = () => {
       const elapsed = Date.now() - startTime

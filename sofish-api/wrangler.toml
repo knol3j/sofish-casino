@@ -9,35 +9,20 @@ ENVIRONMENT = "production"
 API_VERSION = "v1"
 MAX_BET_AMOUNT = "1000"
 
-# KV Namespaces (IDs will be generated after creation)
-# Run: npx wrangler kv:namespace create SESSIONS
-# Run: npx wrangler kv:namespace create CACHE
+# KV Namespaces
 [[kv_namespaces]]
 binding = "SESSIONS"
-id = "YOUR_SESSIONS_KV_ID"  # Replace after running: npx wrangler kv:namespace create SESSIONS
-preview_id = "YOUR_SESSIONS_PREVIEW_KV_ID"
+id = "aece6ce514d043b6b8e1a73860d50cab"
 
 [[kv_namespaces]]
 binding = "CACHE"
-id = "YOUR_CACHE_KV_ID"  # Replace after running: npx wrangler kv:namespace create CACHE
+id = "1b0d4f8ff91047d48c294281011ba8fe"
 
-# D1 Databases (ID will be generated after creation)
-# Run: npx wrangler d1 create sofish-db
+# D1 Database
 [[d1_databases]]
 binding = "DB"
 database_name = "sofish-db"
-database_id = "YOUR_DATABASE_ID"  # Replace after running: npx wrangler d1 create sofish-db
-
-# Rate Limiting
-[[ratelimits]]
-name = "API_RATE_LIMITER"
-namespace_id = "1001"
-simple = { limit = 100, period = 60 }
-
-[[ratelimits]]
-name = "GAME_RATE_LIMITER"
-namespace_id = "1002"
-simple = { limit = 10, period = 60 }
+database_id = "9da5700f-d5ed-4851-8177-8de617e0491c"
 
 # Observability
 [observability]

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSpinSlots, useUserBalance } from '../hooks/useGames'
 import { AdSenseUnit } from '../components/AdSenseUnit'
