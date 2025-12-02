@@ -963,3 +963,632 @@ a {
 button {
   font-family: inherit;
 }
+
+/* ================================
+   PREMIUM FLASHY EFFECTS
+   ================================ */
+
+/* Neon Text Effect */
+.neon-text {
+  text-shadow:
+    0 0 5px var(--gold),
+    0 0 10px var(--gold),
+    0 0 20px var(--gold),
+    0 0 40px var(--gold-dark),
+    0 0 80px var(--gold-dark);
+  animation: neon-flicker 3s infinite alternate;
+}
+
+@keyframes neon-flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% {
+    text-shadow:
+      0 0 5px var(--gold),
+      0 0 10px var(--gold),
+      0 0 20px var(--gold),
+      0 0 40px var(--gold-dark),
+      0 0 80px var(--gold-dark);
+  }
+  20%, 24%, 55% {
+    text-shadow: none;
+  }
+}
+
+/* Neon Border Glow */
+.neon-border {
+  border: 2px solid var(--gold);
+  box-shadow:
+    0 0 5px var(--gold),
+    0 0 10px var(--gold),
+    inset 0 0 5px var(--gold),
+    inset 0 0 10px var(--gold);
+  animation: neon-border-pulse 2s ease-in-out infinite;
+}
+
+@keyframes neon-border-pulse {
+  0%, 100% {
+    box-shadow:
+      0 0 5px var(--gold),
+      0 0 10px var(--gold),
+      inset 0 0 5px var(--gold),
+      inset 0 0 10px var(--gold);
+  }
+  50% {
+    box-shadow:
+      0 0 10px var(--gold),
+      0 0 20px var(--gold),
+      0 0 40px var(--gold),
+      inset 0 0 10px var(--gold),
+      inset 0 0 20px var(--gold);
+  }
+}
+
+/* Rainbow Text Animation */
+.rainbow-text {
+  background: linear-gradient(
+    90deg,
+    #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff, #ff0000
+  );
+  background-size: 400% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: rainbow-shift 3s linear infinite;
+}
+
+@keyframes rainbow-shift {
+  0% { background-position: 0% center; }
+  100% { background-position: 400% center; }
+}
+
+/* Coin Flip Animation */
+@keyframes coin-flip {
+  0% { transform: rotateY(0deg) scale(1); }
+  25% { transform: rotateY(90deg) scale(1.2); }
+  50% { transform: rotateY(180deg) scale(1); }
+  75% { transform: rotateY(270deg) scale(1.2); }
+  100% { transform: rotateY(360deg) scale(1); }
+}
+
+.coin-flip {
+  animation: coin-flip 1s ease-in-out infinite;
+}
+
+/* Sparkle Effect */
+@keyframes sparkle {
+  0%, 100% { opacity: 0; transform: scale(0) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1) rotate(180deg); }
+}
+
+/* Explosion Animation */
+@keyframes explode {
+  0% {
+    transform: scale(0);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(3);
+    opacity: 0;
+  }
+}
+
+/* Money Rain Effect */
+@keyframes money-rain {
+  0% {
+    transform: translateY(-100vh) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0.3;
+  }
+}
+
+/* Slot Machine Lever Pull */
+@keyframes lever-pull {
+  0%, 100% { transform: rotate(0deg); }
+  30% { transform: rotate(45deg); }
+  60% { transform: rotate(-5deg); }
+  80% { transform: rotate(0deg); }
+}
+
+/* Jackpot Shake */
+@keyframes jackpot-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-10px, -10px) rotate(-5deg); }
+  20% { transform: translate(10px, 10px) rotate(5deg); }
+  30% { transform: translate(-10px, 5px) rotate(-3deg); }
+  40% { transform: translate(10px, -5px) rotate(3deg); }
+  50% { transform: translate(-5px, -10px) rotate(-1deg); }
+  60% { transform: translate(5px, 10px) rotate(1deg); }
+  70% { transform: translate(-5px, 5px) rotate(-2deg); }
+  80% { transform: translate(5px, -5px) rotate(2deg); }
+  90% { transform: translate(-2px, -2px) rotate(0deg); }
+}
+
+/* Gold Shimmer Effect */
+@keyframes gold-shimmer {
+  0% {
+    background-position: -200% center;
+  }
+  100% {
+    background-position: 200% center;
+  }
+}
+
+.gold-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--gold-dark) 0%,
+    var(--gold) 25%,
+    var(--gold-light) 50%,
+    var(--gold) 75%,
+    var(--gold-dark) 100%
+  );
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: gold-shimmer 2s linear infinite;
+}
+
+/* Fire Glow */
+.fire-glow {
+  animation: fire-glow 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes fire-glow {
+  0% {
+    box-shadow:
+      0 0 10px #ff4500,
+      0 0 20px #ff6347,
+      0 0 30px #ff7f50,
+      0 0 40px #ffa500;
+  }
+  100% {
+    box-shadow:
+      0 0 20px #ff4500,
+      0 0 40px #ff6347,
+      0 0 60px #ff7f50,
+      0 0 80px #ffa500;
+  }
+}
+
+/* Electric Blue Glow */
+.electric-glow {
+  animation: electric-glow 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes electric-glow {
+  0% {
+    box-shadow:
+      0 0 5px #00ffff,
+      0 0 10px #00ffff,
+      0 0 20px #0095ff;
+  }
+  100% {
+    box-shadow:
+      0 0 10px #00ffff,
+      0 0 20px #00ffff,
+      0 0 40px #0095ff,
+      0 0 60px #0095ff;
+  }
+}
+
+/* Heartbeat Animation */
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  14% { transform: scale(1.1); }
+  28% { transform: scale(1); }
+  42% { transform: scale(1.1); }
+  70% { transform: scale(1); }
+}
+
+.heartbeat {
+  animation: heartbeat 1.5s ease-in-out infinite;
+}
+
+/* 3D Card Flip */
+.card-3d {
+  perspective: 1000px;
+}
+
+.card-3d-inner {
+  transition: transform 0.8s;
+  transform-style: preserve-3d;
+}
+
+.card-3d:hover .card-3d-inner {
+  transform: rotateY(180deg);
+}
+
+/* Floating Elements */
+@keyframes float-random {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  25% { transform: translate(10px, -15px) rotate(5deg); }
+  50% { transform: translate(-5px, -25px) rotate(-5deg); }
+  75% { transform: translate(-15px, -10px) rotate(3deg); }
+}
+
+.float-random {
+  animation: float-random 6s ease-in-out infinite;
+}
+
+/* Pulsing Ring */
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+.pulse-ring {
+  position: relative;
+}
+
+.pulse-ring::before,
+.pulse-ring::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 100%;
+  height: 100%;
+  border: 2px solid var(--gold);
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: pulse-ring 2s ease-out infinite;
+}
+
+.pulse-ring::after {
+  animation-delay: 1s;
+}
+
+/* Scanning Line Effect */
+@keyframes scan-line {
+  0% { top: 0; }
+  100% { top: 100%; }
+}
+
+.scan-effect {
+  position: relative;
+  overflow: hidden;
+}
+
+.scan-effect::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold),
+    var(--gold-light),
+    var(--gold),
+    transparent
+  );
+  animation: scan-line 2s linear infinite;
+  opacity: 0.5;
+}
+
+/* Slot Reel Blur */
+@keyframes reel-blur {
+  0%, 100% { filter: blur(0); }
+  50% { filter: blur(8px); }
+}
+
+/* Vegas Marquee Lights */
+@keyframes marquee-chase {
+  0% { opacity: 1; }
+  50% { opacity: 0.3; }
+  100% { opacity: 1; }
+}
+
+/* Premium Button Hover Effect */
+.btn-premium {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--gold), var(--gold-dark));
+  border: none;
+  color: var(--bg-deepest);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.btn-premium::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(
+    45deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 70%
+  );
+  transform: rotate(45deg);
+  animation: premium-shine 3s ease-in-out infinite;
+}
+
+@keyframes premium-shine {
+  0% { transform: translateX(-100%) rotate(45deg); }
+  100% { transform: translateX(100%) rotate(45deg); }
+}
+
+.btn-premium:hover {
+  transform: translateY(-3px) scale(1.02);
+  box-shadow:
+    0 10px 30px rgba(255, 215, 0, 0.4),
+    0 0 60px rgba(255, 215, 0, 0.2);
+}
+
+/* Luxury Card Effect */
+.luxury-card {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 215, 0, 0.1) 100%
+  );
+  border: 1px solid rgba(255, 215, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.luxury-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 215, 0, 0.2),
+    transparent
+  );
+  transition: left 0.5s ease;
+}
+
+.luxury-card:hover::before {
+  left: 100%;
+}
+
+.luxury-card:hover {
+  border-color: var(--gold);
+  box-shadow:
+    0 0 30px rgba(255, 215, 0, 0.2),
+    inset 0 0 30px rgba(255, 215, 0, 0.05);
+}
+
+/* VIP Crown Animation */
+@keyframes crown-glow {
+  0%, 100% {
+    filter: drop-shadow(0 0 5px var(--gold)) drop-shadow(0 0 10px var(--gold-dark));
+  }
+  50% {
+    filter: drop-shadow(0 0 15px var(--gold)) drop-shadow(0 0 30px var(--gold-dark)) drop-shadow(0 0 45px var(--gold));
+  }
+}
+
+.crown-glow {
+  animation: crown-glow 2s ease-in-out infinite;
+}
+
+/* Treasure Chest Open */
+@keyframes chest-open {
+  0% { transform: rotateX(0deg); }
+  100% { transform: rotateX(-120deg); }
+}
+
+/* Dice Roll */
+@keyframes dice-roll {
+  0% { transform: rotateX(0deg) rotateY(0deg) rotateZ(0deg); }
+  100% { transform: rotateX(720deg) rotateY(720deg) rotateZ(720deg); }
+}
+
+.dice-roll {
+  animation: dice-roll 1s ease-out;
+}
+
+/* Card Deal Animation */
+@keyframes card-deal {
+  0% {
+    transform: translateX(-200px) translateY(-100px) rotate(-180deg) scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(0) translateY(0) rotate(0deg) scale(1);
+    opacity: 1;
+  }
+}
+
+/* Win Counter Animation */
+@keyframes win-counter {
+  0% { transform: scale(1); }
+  10% { transform: scale(1.3); }
+  20% { transform: scale(1); }
+}
+
+/* Glitter Effect Background */
+.glitter-bg {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(255, 215, 0, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 80% 70%, rgba(255, 215, 0, 0.3) 1px, transparent 1px),
+    radial-gradient(circle at 40% 80%, rgba(255, 215, 0, 0.2) 1px, transparent 1px),
+    radial-gradient(circle at 60% 20%, rgba(255, 215, 0, 0.2) 1px, transparent 1px);
+  background-size: 100px 100px, 80px 80px, 120px 120px, 90px 90px;
+  animation: glitter-move 20s linear infinite;
+}
+
+@keyframes glitter-move {
+  0% { background-position: 0 0, 0 0, 0 0, 0 0; }
+  100% { background-position: 100px 100px, -80px 80px, 120px -120px, -90px 90px; }
+}
+
+/* Slot Win Lines */
+.win-line-horizontal {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, var(--gold), var(--gold-light), var(--gold), transparent);
+  animation: win-line-flash 0.5s ease-in-out infinite;
+}
+
+@keyframes win-line-flash {
+  0%, 100% { opacity: 1; box-shadow: 0 0 20px var(--gold); }
+  50% { opacity: 0.5; box-shadow: 0 0 10px var(--gold); }
+}
+
+/* Progressive Jackpot Counter */
+.jackpot-counter {
+  font-family: 'Cinzel', serif;
+  font-weight: 900;
+  background: linear-gradient(180deg, var(--gold-light), var(--gold), var(--gold-dark));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+  animation: jackpot-pulse 1s ease-in-out infinite;
+}
+
+@keyframes jackpot-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+/* Chip Stack Effect */
+.chip-stack {
+  position: relative;
+}
+
+.chip-stack::before,
+.chip-stack::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: inherit;
+  z-index: -1;
+}
+
+.chip-stack::before {
+  top: 4px;
+  left: 0;
+  filter: brightness(0.8);
+}
+
+.chip-stack::after {
+  top: 8px;
+  left: 0;
+  filter: brightness(0.6);
+}
+
+/* Lucky Clover Spin */
+@keyframes clover-spin {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.1); }
+  50% { transform: rotate(180deg) scale(1); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Roulette Wheel Spin */
+@keyframes wheel-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(3600deg); }
+}
+
+/* Card Shuffle */
+@keyframes card-shuffle {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px) rotate(-5deg); }
+  75% { transform: translateX(10px) rotate(5deg); }
+}
+
+/* Level Up Effect */
+@keyframes level-up {
+  0% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(-50px) scale(1.5);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-100px) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Bonus Multiplier */
+.multiplier-badge {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 20px;
+  background: linear-gradient(135deg, #ff4500, #ff6347);
+  border-radius: var(--radius-full);
+  font-weight: 900;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  animation: multiplier-bounce 0.5s ease-in-out infinite;
+}
+
+@keyframes multiplier-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Streak Fire Effect */
+.streak-fire {
+  position: relative;
+}
+
+.streak-fire::after {
+  content: '🔥';
+  position: absolute;
+  top: -10px;
+  right: -10px;
+  font-size: 24px;
+  animation: fire-dance 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes fire-dance {
+  0% { transform: translateY(0) scale(1); }
+  100% { transform: translateY(-5px) scale(1.1); }
+}
+
+/* VIP Exclusive Border */
+.vip-border {
+  border: 3px solid transparent;
+  background:
+    linear-gradient(var(--bg-card), var(--bg-card)) padding-box,
+    linear-gradient(135deg, var(--gold), var(--accent), var(--gold)) border-box;
+  animation: vip-border-rotate 3s linear infinite;
+}
+
+@keyframes vip-border-rotate {
+  0% { background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(0deg, var(--gold), var(--accent), var(--gold)) border-box; }
+  25% { background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(90deg, var(--gold), var(--accent), var(--gold)) border-box; }
+  50% { background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(180deg, var(--gold), var(--accent), var(--gold)) border-box; }
+  75% { background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(270deg, var(--gold), var(--accent), var(--gold)) border-box; }
+  100% { background: linear-gradient(var(--bg-card), var(--bg-card)) padding-box, linear-gradient(360deg, var(--gold), var(--accent), var(--gold)) border-box; }
+}

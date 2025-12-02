@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import { Sidebar } from './components/Sidebar'
+import { WebGLBackground } from './components/WebGLBackground'
 import { Home } from './pages/Home'
 import { Login } from './pages/Login'
 import { SlotsGame } from './pages/SlotsGame'
@@ -207,6 +208,20 @@ function Footer() {
 function AppContent() {
   return (
     <div className="app">
+      {/* WebGL Particle Background */}
+      <WebGLBackground
+        particleCount={200}
+        colors={[
+          [1.0, 0.843, 0],     // Gold
+          [1.0, 0.647, 0],     // Orange
+          [0.545, 0.361, 0.96], // Purple
+          [0, 0.831, 0.667],   // Cyan
+          [1.0, 0.412, 0.706]  // Pink
+        ]}
+        speed={0.8}
+        interactive={true}
+      />
+
       {/* Sidebar */}
       <Sidebar />
 

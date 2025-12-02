@@ -1,5 +1,59 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+
+// Progressive Jackpot Counter Component
+function JackpotCounter() {
+  const [amount, setAmount] = useState(2847293.58)
+  const [isIncrementing, setIsIncrementing] = useState(false)
+
+  useEffect(() => {
+    // Simulate progressive jackpot growing
+    const interval = setInterval(() => {
+      setIsIncrementing(true)
+      setAmount(prev => prev + Math.random() * 50 + 10)
+      setTimeout(() => setIsIncrementing(false), 300)
+    }, 2000 + Math.random() * 3000)
+
+    return () => clearInterval(interval)
+  }, [])
+
+  return (
+    <div className={`jackpot-counter ${isIncrementing ? 'incrementing' : ''}`}>
+      <div className="jackpot-label">
+        <span className="jackpot-icon">🎰</span>
+        <span>PROGRESSIVE JACKPOT</span>
+      </div>
+      <div className="jackpot-amount">
+        <span className="currency">$</span>
+        <span className="amount">{amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+      </div>
+      <div className="jackpot-glow" />
+    </div>
+  )
+}
+
+// Floating Coins Component
+function FloatingCoins() {
+  const coins = ['🪙', '💰', '💎', '⭐', '✨']
+  return (
+    <div className="floating-coins">
+      {[...Array(15)].map((_, i) => (
+        <div
+          key={i}
+          className="floating-coin"
+          style={{
+            left: `${Math.random() * 100}%`,
+            animationDelay: `${Math.random() * 10}s`,
+            animationDuration: `${8 + Math.random() * 8}s`,
+            fontSize: `${20 + Math.random() * 30}px`
+          }}
+        >
+          {coins[Math.floor(Math.random() * coins.length)]}
+        </div>
+      ))}
+    </div>
+  )
+}
 
 // Simulated live wins for the ticker
 const generateLiveWin = () => {
@@ -125,7 +179,7 @@ export function Home() {
       <section className="hero">
         <div className="hero-bg">
           <div className="hero-particles">
-            {[...Array(30)].map((_, i) => (
+            {[...Array(50)].map((_, i) => (
               <div key={i} className="particle" style={{
                 left: `${Math.random() * 100}%`,
                 animationDelay: `${Math.random() * 5}s`,
@@ -133,9 +187,11 @@ export function Home() {
               }} />
             ))}
           </div>
+          <FloatingCoins />
           <div className="hero-glow hero-glow-1" />
           <div className="hero-glow hero-glow-2" />
           <div className="hero-glow hero-glow-3" />
+          <div className="neon-grid" />
         </div>
 
         <div className="container">
@@ -144,6 +200,9 @@ export function Home() {
               <span className="badge-icon">⭐</span>
               <span>Premium Gaming Experience</span>
             </div>
+
+            {/* Progressive Jackpot */}
+            <JackpotCounter />
 
             <h1 className="hero-title animate-fadeInUp">
               Welcome to <span className="text-gradient-gold">SOFISH</span>
@@ -1276,6 +1335,179 @@ export function Home() {
           font-size: 18px;
           color: var(--text-secondary);
           margin-bottom: 32px;
+        }
+
+        /* Progressive Jackpot Counter */
+        .jackpot-counter {
+          position: relative;
+          margin-bottom: 32px;
+          padding: 24px 48px;
+          background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
+          border: 2px solid var(--border-gold);
+          border-radius: var(--radius-xl);
+          display: inline-block;
+          overflow: hidden;
+          animation: jackpot-pulse 3s ease-in-out infinite;
+        }
+
+        .jackpot-counter::before {
+          content: '';
+          position: absolute;
+          top: -2px;
+          left: -2px;
+          right: -2px;
+          bottom: -2px;
+          background: linear-gradient(45deg, #FFD700, #FF6347, #FFD700, #00D4AA, #FFD700);
+          background-size: 400% 400%;
+          z-index: -1;
+          border-radius: var(--radius-xl);
+          animation: gradient-rotate 4s linear infinite;
+          filter: blur(3px);
+        }
+
+        @keyframes gradient-rotate {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+
+        @keyframes jackpot-pulse {
+          0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
+          50% { transform: scale(1.02); box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); }
+        }
+
+        .jackpot-counter.incrementing {
+          animation: jackpot-increment 0.3s ease-out;
+        }
+
+        @keyframes jackpot-increment {
+          0% { transform: scale(1); }
+          50% { transform: scale(1.05); }
+          100% { transform: scale(1); }
+        }
+
+        .jackpot-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 800;
+          color: var(--gold);
+          text-transform: uppercase;
+          letter-spacing: 3px;
+          margin-bottom: 8px;
+        }
+
+        .jackpot-icon {
+          font-size: 20px;
+          animation: slot-spin 2s ease-in-out infinite;
+        }
+
+        @keyframes slot-spin {
+          0%, 100% { transform: rotate(0deg); }
+          10% { transform: rotate(-10deg); }
+          20% { transform: rotate(10deg); }
+          30% { transform: rotate(0deg); }
+        }
+
+        .jackpot-amount {
+          display: flex;
+          align-items: baseline;
+          justify-content: center;
+          gap: 4px;
+        }
+
+        .jackpot-amount .currency {
+          font-family: 'Cinzel', serif;
+          font-size: 32px;
+          font-weight: 700;
+          color: var(--gold);
+        }
+
+        .jackpot-amount .amount {
+          font-family: 'Cinzel', serif;
+          font-size: 48px;
+          font-weight: 900;
+          background: linear-gradient(135deg, #FFE55C 0%, #FFD700 50%, #FFA500 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          text-shadow: none;
+          filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
+        }
+
+        .jackpot-glow {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 150%;
+          height: 150%;
+          background: radial-gradient(ellipse, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
+          pointer-events: none;
+          animation: glow-breathe 4s ease-in-out infinite;
+        }
+
+        @keyframes glow-breathe {
+          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
+          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
+        }
+
+        /* Floating Coins */
+        .floating-coins {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+
+        .floating-coin {
+          position: absolute;
+          bottom: -50px;
+          animation: coin-float linear infinite;
+          opacity: 0.6;
+          filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
+        }
+
+        @keyframes coin-float {
+          0% {
+            transform: translateY(0) rotate(0deg) scale(1);
+            opacity: 0;
+          }
+          10% {
+            opacity: 0.6;
+          }
+          90% {
+            opacity: 0.6;
+          }
+          100% {
+            transform: translateY(-120vh) rotate(720deg) scale(0.8);
+            opacity: 0;
+          }
+        }
+
+        /* Neon Grid Background */
+        .neon-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image:
+            linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
+          background-size: 50px 50px;
+          animation: grid-scroll 20s linear infinite;
+          opacity: 0.5;
+        }
+
+        @keyframes grid-scroll {
+          0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
+          100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
         }
 
         /* Responsive */
