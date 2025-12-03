@@ -1,5 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { Link } from 'react-router-dom'
+import { ShaderBackground, GlitchText, NeonBorder } from '../components/ShaderEffects'
+import { Card3D, HolographicCard, MagneticButton, FloatingElement } from '../components/Card3D'
 
 // Progressive Jackpot Counter Component
 function JackpotCounter() {
@@ -175,6 +177,9 @@ export function Home() {
 
   return (
     <div className="home-page">
+      {/* Holographic Shader Background */}
+      <ShaderBackground type="holographic" />
+
       {/* Hero Section */}
       <section className="hero">
         <div className="hero-bg">
@@ -192,6 +197,9 @@ export function Home() {
           <div className="hero-glow hero-glow-2" />
           <div className="hero-glow hero-glow-3" />
           <div className="neon-grid" />
+          {/* Morphing Blob Effects */}
+          <div className="blob-bg" style={{ top: '20%', left: '10%' }} />
+          <div className="blob-bg" style={{ top: '60%', right: '10%', animationDelay: '2s' }} />
         </div>
 
         <div className="container">
@@ -205,9 +213,9 @@ export function Home() {
             <JackpotCounter />
 
             <h1 className="hero-title animate-fadeInUp">
-              Welcome to <span className="text-gradient-gold">SOFISH</span>
+              Welcome to <span className="holo-shimmer">SOFISH</span>
               <br />
-              <span className="hero-title-sub">Casino</span>
+              <span className="hero-title-sub cyber-text">Casino</span>
             </h1>
 
             <p className="hero-subtitle animate-fadeInUp">
@@ -215,32 +223,34 @@ export function Home() {
               instant payouts, and exclusive rewards await you.
             </p>
 
-            <div className="hero-stats animate-fadeInUp">
-              <div className="hero-stat">
-                <div className="hero-stat-value">$2.5M+</div>
-                <div className="hero-stat-label">Total Payouts</div>
+            <NeonBorder color="#FFD700" intensity={1.5}>
+              <div className="hero-stats animate-fadeInUp glass-pro">
+                <div className="hero-stat">
+                  <div className="hero-stat-value holo-shimmer">$2.5M+</div>
+                  <div className="hero-stat-label">Total Payouts</div>
+                </div>
+                <div className="hero-stat-divider" />
+                <div className="hero-stat">
+                  <div className="hero-stat-value holo-shimmer">100K+</div>
+                  <div className="hero-stat-label">Active Players</div>
+                </div>
+                <div className="hero-stat-divider" />
+                <div className="hero-stat">
+                  <div className="hero-stat-value holo-shimmer">50M+</div>
+                  <div className="hero-stat-label">Games Played</div>
+                </div>
               </div>
-              <div className="hero-stat-divider" />
-              <div className="hero-stat">
-                <div className="hero-stat-value">100K+</div>
-                <div className="hero-stat-label">Active Players</div>
-              </div>
-              <div className="hero-stat-divider" />
-              <div className="hero-stat">
-                <div className="hero-stat-value">50M+</div>
-                <div className="hero-stat-label">Games Played</div>
-              </div>
-            </div>
+            </NeonBorder>
 
             <div className="hero-cta animate-fadeInUp">
               <Link to="/login">
-                <button className="btn btn-primary btn-xl hero-btn">
+                <MagneticButton className="hero-magnetic-btn">
                   <span>🎰</span>
                   Start Playing Now
-                </button>
+                </MagneticButton>
               </Link>
               <Link to="/games">
-                <button className="btn btn-outline btn-xl">
+                <button className="btn btn-outline btn-xl liquid-btn">
                   Explore Games
                 </button>
               </Link>
@@ -307,42 +317,50 @@ export function Home() {
 
           <div className="featured-grid">
             {FEATURED_GAMES.map((game, index) => (
-              <Link
+              <Card3D
                 key={game.id}
-                to={game.path}
-                className={`game-card ${index === activeGameIndex ? 'game-card-featured' : ''}`}
-                style={{ animationDelay: `${index * 0.1}s` }}
+                glowColor={game.badgeType === 'gold' ? '#FFD700' : game.badgeType === 'cyan' ? '#00FFFF' : '#00D4AA'}
+                maxRotation={12}
+                intensity={1.2}
               >
-                <div className={`game-badge badge-${game.badgeType}`}>
-                  {game.badge}
-                </div>
-
-                <div className="game-icon-wrapper">
-                  <div className="game-icon">{game.image}</div>
-                  <div className="game-icon-glow" />
-                </div>
-
-                <div className="game-info">
-                  <h3 className="game-name">{game.name}</h3>
-                  <p className="game-desc">{game.description}</p>
-                </div>
-
-                <div className="game-stats">
-                  <div className="game-stat">
-                    <span className="stat-label">RTP</span>
-                    <span className="stat-value">{game.rtp}</span>
+                <Link
+                  to={game.path}
+                  className={`game-card depth-shadow ${index === activeGameIndex ? 'game-card-featured' : ''}`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <div className={`game-badge badge-${game.badgeType}`}>
+                    {game.badge}
                   </div>
-                  <div className="game-stat">
-                    <span className="stat-label">Max Win</span>
-                    <span className="stat-value text-gold">{game.maxWin}</span>
-                  </div>
-                </div>
 
-                <div className="game-play-btn">
-                  <span>Play Now</span>
-                  <span className="play-arrow">→</span>
-                </div>
-              </Link>
+                  <div className="game-icon-wrapper">
+                    <FloatingElement amplitude={8} duration={3} delay={index * 0.5}>
+                      <div className="game-icon">{game.image}</div>
+                    </FloatingElement>
+                    <div className="game-icon-glow" />
+                  </div>
+
+                  <div className="game-info">
+                    <h3 className="game-name">{game.name}</h3>
+                    <p className="game-desc">{game.description}</p>
+                  </div>
+
+                  <div className="game-stats">
+                    <div className="game-stat">
+                      <span className="stat-label">RTP</span>
+                      <span className="stat-value">{game.rtp}</span>
+                    </div>
+                    <div className="game-stat">
+                      <span className="stat-label">Max Win</span>
+                      <span className="stat-value text-gold">{game.maxWin}</span>
+                    </div>
+                  </div>
+
+                  <div className="game-play-btn electric-arc">
+                    <span>Play Now</span>
+                    <span className="play-arrow">→</span>
+                  </div>
+                </Link>
+              </Card3D>
             ))}
           </div>
 
@@ -398,28 +416,31 @@ export function Home() {
 
           <div className="vip-tiers">
             {VIP_TIERS.map((tier, index) => (
-              <div
-                key={tier.name}
-                className="vip-tier"
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                <div className="tier-icon" style={{ color: tier.color }}>
-                  {tier.icon}
-                </div>
-                <h4 className="tier-name" style={{ color: tier.color }}>
-                  {tier.name}
-                </h4>
-                <div className="tier-benefits">
-                  <div className="tier-benefit">
-                    <span className="benefit-value">{tier.cashback}</span>
-                    <span className="benefit-label">Cashback</span>
+              <HolographicCard key={tier.name}>
+                <div
+                  className="vip-tier premium-card-hover"
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  <FloatingElement amplitude={6} duration={2.5} delay={index * 0.3}>
+                    <div className="tier-icon" style={{ color: tier.color }}>
+                      {tier.icon}
+                    </div>
+                  </FloatingElement>
+                  <h4 className="tier-name holo-shimmer" style={{ '--base-color': tier.color } as React.CSSProperties}>
+                    {tier.name}
+                  </h4>
+                  <div className="tier-benefits">
+                    <div className="tier-benefit">
+                      <span className="benefit-value">{tier.cashback}</span>
+                      <span className="benefit-label">Cashback</span>
+                    </div>
+                    <div className="tier-benefit">
+                      <span className="benefit-value">{tier.bonus}</span>
+                      <span className="benefit-label">Bonus</span>
+                    </div>
                   </div>
-                  <div className="tier-benefit">
-                    <span className="benefit-value">{tier.bonus}</span>
-                    <span className="benefit-label">Bonus</span>
-                  </div>
                 </div>
-              </div>
+              </HolographicCard>
             ))}
           </div>
 
