@@ -1,62 +1,76 @@
-import { useState, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useState, useRef, useEffect } from 'react'
+import { useParams, Link } from 'react-router-dom'
 import { useSpinSlots, useUserBalance } from '../hooks/useGames'
-import { AdSenseUnit } from '../components/AdSenseUnit'
 
 interface SlotTheme {
   name: string
+  subtitle: string
   symbols: string[]
   colors: {
     primary: string
     secondary: string
     accent: string
+    glow: string
   }
   minBet: number
   multipliers: { [key: string]: number }
+  background: string
 }
 
 const THEMES: { [key: string]: SlotTheme } = {
   classic: {
-    name: '777 Classic Slots',
+    name: '777 CLASSIC',
+    subtitle: 'The Original Vegas Experience',
     symbols: ['🍒', '🔔', '💎', '⭐', 'BAR', '7️⃣', '💰'],
-    colors: { primary: '#FFD700', secondary: '#FF6347', accent: '#9370DB' },
+    colors: { primary: '#FFD700', secondary: '#FF6347', accent: '#9370DB', glow: 'rgba(255, 215, 0, 0.5)' },
     minBet: 10,
-    multipliers: { '7️⃣7️⃣7️⃣': 777, '💎💎💎': 100, '⭐⭐⭐': 50 }
+    multipliers: { '7️⃣7️⃣7️⃣': 777, '💎💎💎': 100, '⭐⭐⭐': 50 },
+    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%)'
   },
   fruit: {
-    name: 'Fruit Mania',
+    name: 'FRUIT MANIA',
+    subtitle: 'Sweet & Juicy Wins',
     symbols: ['🍒', '🍋', '🍊', '🍇', '🍉', '🍓', '🍌'],
-    colors: { primary: '#FF1493', secondary: '#32CD32', accent: '#FF8C00' },
+    colors: { primary: '#FF1493', secondary: '#32CD32', accent: '#FF8C00', glow: 'rgba(255, 20, 147, 0.5)' },
     minBet: 5,
-    multipliers: { '🍒🍒🍒': 50, '🍋🍋🍋': 40, '🍊🍊🍊': 30 }
+    multipliers: { '🍒🍒🍒': 50, '🍋🍋🍋': 40, '🍊🍊🍊': 30 },
+    background: 'linear-gradient(135deg, #2d1f3d 0%, #1a2a1a 50%, #0f1f0f 100%)'
   },
   diamond: {
-    name: 'Diamond Deluxe',
+    name: 'DIAMOND DELUXE',
+    subtitle: 'High Roller VIP Experience',
     symbols: ['💎', '💍', '👑', '⭐', '🔷', '✨', '🌟'],
-    colors: { primary: '#00D9FF', secondary: '#9D00FF', accent: '#FFD700' },
+    colors: { primary: '#00D9FF', secondary: '#9D00FF', accent: '#FFD700', glow: 'rgba(0, 217, 255, 0.5)' },
     minBet: 50,
-    multipliers: { '💎💎💎': 500, '💍💍💍': 250, '👑👑👑': 200 }
+    multipliers: { '💎💎💎': 500, '💍💍💍': 250, '👑👑👑': 200 },
+    background: 'linear-gradient(135deg, #0a1628 0%, #1a0a28 50%, #0a0a1a 100%)'
   },
   dragon: {
-    name: "Dragon's Fortune",
+    name: "DRAGON'S FORTUNE",
+    subtitle: 'Legendary Asian Jackpots',
     symbols: ['🐉', '🔥', '🏮', '🎋', '⚡', '🌙', '🔮'],
-    colors: { primary: '#FF0000', secondary: '#FFD700', accent: '#8B0000' },
+    colors: { primary: '#FF0000', secondary: '#FFD700', accent: '#8B0000', glow: 'rgba(255, 0, 0, 0.5)' },
     minBet: 100,
-    multipliers: { '🐉🐉🐉': 888, '🔥🔥🔥': 188, '🏮🏮🏮': 88 }
+    multipliers: { '🐉🐉🐉': 888, '🔥🔥🔥': 188, '🏮🏮🏮': 88 },
+    background: 'linear-gradient(135deg, #2a0a0a 0%, #1a1a0a 50%, #0a0a0a 100%)'
   },
   vegas: {
-    name: 'Vegas Nights',
+    name: 'VEGAS NIGHTS',
+    subtitle: 'Sin City Glamour',
     symbols: ['🎰', '🎲', '🃏', '💵', '🎩', '🍾', '🌃'],
-    colors: { primary: '#FFD700', secondary: '#000000', accent: '#FF0000' },
+    colors: { primary: '#FFD700', secondary: '#000000', accent: '#FF0000', glow: 'rgba(255, 215, 0, 0.5)' },
     minBet: 25,
-    multipliers: { '🎰🎰🎰': 300, '🎲🎲🎲': 150, '🃏🃏🃏': 100 }
+    multipliers: { '🎰🎰🎰': 300, '🎲🎲🎲': 150, '🃏🃏🃏': 100 },
+    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f0f23 100%)'
   },
   ocean: {
-    name: 'Ocean Treasures',
+    name: 'OCEAN TREASURES',
+    subtitle: 'Deep Sea Riches',
     symbols: ['🐚', '🦀', '🐙', '🐠', '⚓', '🏴‍☠️', '💰'],
-    colors: { primary: '#00CED1', secondary: '#4169E1', accent: '#FFD700' },
+    colors: { primary: '#00CED1', secondary: '#4169E1', accent: '#FFD700', glow: 'rgba(0, 206, 209, 0.5)' },
     minBet: 20,
-    multipliers: { '🏴‍☠️🏴‍☠️🏴‍☠️': 400, '💰💰💰': 200, '⚓⚓⚓': 100 }
+    multipliers: { '🏴‍☠️🏴‍☠️🏴‍☠️': 400, '💰💰💰': 200, '⚓⚓⚓': 100 },
+    background: 'linear-gradient(135deg, #0a1a2a 0%, #0a2a3a 50%, #0a0a1a 100%)'
   }
 }
 
@@ -70,20 +84,30 @@ export function SlotsGame() {
   const [showWin, setShowWin] = useState(false)
   const [reelPositions, setReelPositions] = useState([0, 0, 0])
   const [reelBlurs, setReelBlurs] = useState([0, 0, 0])
-  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number}>>([])
+  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, color: string}>>([])
+  const [showCelebration, setShowCelebration] = useState(false)
+  const [celebrationType, setCelebrationType] = useState<'normal' | 'big' | 'mega' | 'jackpot'>('normal')
   const animationFrameRef = useRef<number>()
 
   const spinMutation = useSpinSlots()
   const { data: balanceData, refetch: refetchBalance } = useUserBalance()
 
-  const SYMBOL_HEIGHT = 140
+  const SYMBOL_HEIGHT = 120
 
-  // Professional reel animation with acceleration, deceleration, and bounce
+  // Reset bet when theme changes
+  useEffect(() => {
+    setBetAmount(currentTheme.minBet)
+    setResult(null)
+    setShowWin(false)
+    setReelPositions([0, 0, 0])
+  }, [theme, currentTheme.minBet])
+
   const animateReel = (reelIndex: number, targetSymbol: number, duration: number) => {
     const startTime = Date.now()
     const startPosition = reelPositions[reelIndex]
-    const targetPosition = targetSymbol * SYMBOL_HEIGHT
-    const distance = targetPosition - (startPosition * SYMBOL_HEIGHT) + (currentTheme.symbols.length * SYMBOL_HEIGHT * 3)
+    const totalSpins = 3 + reelIndex
+    const targetPosition = targetSymbol + (totalSpins * currentTheme.symbols.length)
+    const distance = (targetPosition - startPosition) * SYMBOL_HEIGHT
 
     const animate = () => {
       const elapsed = Date.now() - startTime
@@ -92,27 +116,27 @@ export function SlotsGame() {
       let eased: number
       let blurAmount: number
 
-      if (progress < 0.1) {
-        // Phase 1: Ease in (accelerate)
-        const accelProgress = progress / 0.1
-        eased = 0.5 * Math.pow(accelProgress, 2)
-        blurAmount = accelProgress * 12
-      } else if (progress < 0.9) {
-        // Phase 2: Constant speed
-        const constProgress = (progress - 0.1) / 0.8
-        eased = 0.05 + (constProgress * 0.85)
-        blurAmount = 12
+      if (progress < 0.15) {
+        // Acceleration
+        const accelProgress = progress / 0.15
+        eased = 0.5 * Math.pow(accelProgress, 2) * 0.15
+        blurAmount = accelProgress * 15
+      } else if (progress < 0.85) {
+        // Constant high speed
+        const constProgress = (progress - 0.15) / 0.7
+        eased = 0.075 + (constProgress * 0.75)
+        blurAmount = 15
       } else {
-        // Phase 3: Ease out with bounce (decelerate)
-        const decelProgress = (progress - 0.9) / 0.1
-        const c4 = (2 * Math.PI) / 3
-        eased = decelProgress === 1
+        // Deceleration with elastic bounce
+        const decelProgress = (progress - 0.85) / 0.15
+        const c4 = (2 * Math.PI) / 4.5
+        eased = 0.825 + (0.175 * (decelProgress === 1
           ? 1
-          : 0.9 + (0.1 * (Math.pow(2, -10 * decelProgress) * Math.sin((decelProgress * 10 - 0.75) * c4) + 1))
-        blurAmount = (1 - decelProgress) * 12
+          : Math.pow(2, -10 * decelProgress) * Math.sin((decelProgress * 10 - 0.75) * c4) + 1))
+        blurAmount = Math.max(0, (1 - decelProgress) * 15)
       }
 
-      const currentPositionPx = (startPosition * SYMBOL_HEIGHT) + (distance * eased)
+      const currentPositionPx = startPosition * SYMBOL_HEIGHT + distance * eased
       const currentPositionIndex = (currentPositionPx / SYMBOL_HEIGHT) % currentTheme.symbols.length
 
       setReelPositions(prev => {
@@ -130,7 +154,6 @@ export function SlotsGame() {
       if (progress < 1) {
         animationFrameRef.current = requestAnimationFrame(animate)
       } else {
-        // Final settle
         setReelPositions(prev => {
           const newPositions = [...prev]
           newPositions[reelIndex] = targetSymbol
@@ -152,20 +175,17 @@ export function SlotsGame() {
 
     setIsSpinning(true)
     setShowWin(false)
+    setShowCelebration(false)
     setParticles([])
 
     try {
       const data = await spinMutation.mutateAsync(betAmount)
+      const spinDurations = [1600, 2000, 2400]
 
-      // Professional staggered reel stops
-      const spinDurations = [1800, 2200, 2600]
-
-      // Start all reels spinning
       spinDurations.forEach((duration, reelIndex) => {
         animateReel(reelIndex, data.result[reelIndex] - 1, duration)
       })
 
-      // Wait for all reels to stop
       setTimeout(() => {
         setResult(data.result)
         setWinAmount(data.winAmount)
@@ -174,9 +194,24 @@ export function SlotsGame() {
 
         if (data.isWin) {
           setShowWin(true)
-          triggerWinEffects(data.winAmount, betAmount)
+          const multiplier = data.winAmount / betAmount
+
+          if (multiplier >= 100) {
+            setCelebrationType('jackpot')
+            triggerJackpotCelebration()
+          } else if (multiplier >= 50) {
+            setCelebrationType('mega')
+            triggerMegaWin()
+          } else if (multiplier >= 10) {
+            setCelebrationType('big')
+            triggerBigWin()
+          } else {
+            setCelebrationType('normal')
+            triggerNormalWin()
+          }
+          setShowCelebration(true)
         }
-      }, Math.max(...spinDurations) + 200)
+      }, Math.max(...spinDurations) + 300)
 
     } catch (error) {
       console.error('Spin failed:', error)
@@ -184,37 +219,13 @@ export function SlotsGame() {
     }
   }
 
-  const triggerWinEffects = (win: number, bet: number) => {
-    const multiplier = win / bet
-
-    // Confetti for big wins
-    if (multiplier >= 10) {
-      for (let i = 0; i < 100; i++) {
-        setTimeout(() => createParticle(), i * 20)
-      }
-    } else if (multiplier >= 5) {
-      for (let i = 0; i < 50; i++) {
-        setTimeout(() => createParticle(), i * 30)
-      }
-    } else {
-      for (let i = 0; i < 20; i++) {
-        setTimeout(() => createParticle(), i * 50)
-      }
-    }
-
-    // Screen shake for jackpot
-    if (multiplier >= 50) {
-      document.body.classList.add('screen-shake')
-      setTimeout(() => document.body.classList.remove('screen-shake'), 1000)
-    }
-  }
-
-  const createParticle = () => {
+  const createParticle = (color?: string) => {
     const id = Date.now() + Math.random()
     const particle = {
       id,
-      x: Math.random() * 100,
-      y: Math.random() * 100
+      x: 20 + Math.random() * 60,
+      y: Math.random() * 100,
+      color: color || currentTheme.colors.primary
     }
     setParticles(prev => [...prev, particle])
     setTimeout(() => {
@@ -222,815 +233,1067 @@ export function SlotsGame() {
     }, 3000)
   }
 
-  const getSymbol = (value: number) => {
-    return currentTheme.symbols[value] || '❓'
+  const triggerNormalWin = () => {
+    for (let i = 0; i < 30; i++) {
+      setTimeout(() => createParticle(), i * 30)
+    }
   }
 
-  const quickBet = (amount: number) => {
-    setBetAmount(amount)
+  const triggerBigWin = () => {
+    for (let i = 0; i < 60; i++) {
+      setTimeout(() => createParticle(), i * 20)
+    }
+  }
+
+  const triggerMegaWin = () => {
+    for (let i = 0; i < 100; i++) {
+      setTimeout(() => {
+        createParticle([currentTheme.colors.primary, currentTheme.colors.secondary, currentTheme.colors.accent][Math.floor(Math.random() * 3)])
+      }, i * 15)
+    }
+    document.body.classList.add('screen-shake')
+    setTimeout(() => document.body.classList.remove('screen-shake'), 600)
+  }
+
+  const triggerJackpotCelebration = () => {
+    for (let i = 0; i < 150; i++) {
+      setTimeout(() => {
+        createParticle(['#FFD700', '#FF6347', '#9370DB', '#00CED1', '#FF1493'][Math.floor(Math.random() * 5)])
+      }, i * 10)
+    }
+    document.body.classList.add('screen-shake')
+    setTimeout(() => document.body.classList.remove('screen-shake'), 1000)
+  }
+
+  const getSymbol = (value: number) => {
+    const index = Math.floor(value + currentTheme.symbols.length) % currentTheme.symbols.length
+    return currentTheme.symbols[index] || '❓'
+  }
+
+  const maxBet = () => {
+    const max = Math.min(1000, balanceData?.balance || 0)
+    setBetAmount(max)
   }
 
   return (
-    <div className="slots-game-page">
-      {/* Top Ad */}
-      <div style={{ marginBottom: '20px' }}>
-        <AdSenseUnit adSlot="1234567890" />
+    <div className="slots-page" style={{ background: currentTheme.background }}>
+      {/* Ambient Background Effects */}
+      <div className="ambient-bg">
+        <div className="ambient-orb orb-1" style={{ background: currentTheme.colors.primary }} />
+        <div className="ambient-orb orb-2" style={{ background: currentTheme.colors.secondary }} />
+        <div className="ambient-orb orb-3" style={{ background: currentTheme.colors.accent }} />
       </div>
 
       <div className="container">
         {/* Header */}
-        <div className="game-header text-center">
-          <h1 className="game-title gold-text animated-title" style={{ color: currentTheme.colors.primary }}>
-            🎰 {currentTheme.name.toUpperCase()} 🎰
-          </h1>
-          <div className="balance-display">
-            <div className="balance-label">YOUR BALANCE</div>
-            <div className={`balance-amount gold-text ${showWin ? 'balance-pulse' : ''}`}>
-              {balanceData?.balance?.toLocaleString() || 0} 💰
+        <div className="game-header">
+          <Link to="/slots-hub" className="back-btn">
+            <span>←</span>
+            <span>All Slots</span>
+          </Link>
+
+          <div className="header-info">
+            <h1 className="game-title" style={{ color: currentTheme.colors.primary }}>
+              {currentTheme.name}
+            </h1>
+            <p className="game-subtitle">{currentTheme.subtitle}</p>
+          </div>
+
+          <div className="balance-card">
+            <div className="balance-label">BALANCE</div>
+            <div className="balance-value" style={{ color: currentTheme.colors.primary }}>
+              <span className="balance-icon">💰</span>
+              <span className="balance-amount">{balanceData?.balance?.toLocaleString() || 0}</span>
             </div>
           </div>
         </div>
 
         {/* Slot Machine */}
-        <div className={`slot-machine ${isSpinning ? 'machine-active' : ''}`}>
-          {/* Marquee Lights */}
-          <div className="marquee-lights">
-            {[...Array(20)].map((_, i) => (
-              <div key={i} className="marquee-light" style={{ animationDelay: `${i * 0.1}s` }}></div>
-            ))}
+        <div className="slot-machine">
+          {/* Top Decorations */}
+          <div className="machine-top">
+            <div className="marquee-lights">
+              {[...Array(24)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`light ${isSpinning ? 'spinning' : ''}`}
+                  style={{
+                    background: currentTheme.colors.primary,
+                    animationDelay: `${i * 0.08}s`,
+                    boxShadow: `0 0 10px ${currentTheme.colors.glow}`
+                  }}
+                />
+              ))}
+            </div>
           </div>
 
-          <div className="slot-body">
-            {/* Payout Line */}
-            <div className="payout-line"></div>
+          {/* Main Display */}
+          <div className="machine-body">
+            {/* Win Line Indicator */}
+            <div className="win-line" style={{ background: currentTheme.colors.primary, boxShadow: `0 0 20px ${currentTheme.colors.glow}` }} />
 
             {/* Reels */}
             <div className="reels-container">
-              {[0, 1, 2].map((index) => (
-                <div key={index} className="reel-window">
-                  <div className={`reel ${isSpinning ? 'reel-spinning' : 'reel-stopped'}`}
-                    style={{
-                      filter: `blur(${reelBlurs[index]}px)`,
-                      transition: 'filter 0.1s linear'
-                    }}
-                  >
-                    {/* Show 3 symbols per reel for scrolling effect */}
-                    {[-1, 0, 1].map((offset) => {
-                      const symbolIndex = Math.floor(reelPositions[index] + offset + currentTheme.symbols.length) % currentTheme.symbols.length
-                      return (
-                        <div
-                          key={offset}
-                          className={`symbol ${offset === 0 && !isSpinning ? 'symbol-active' : ''}`}
-                          style={{
-                            transform: `translateY(${offset * 140}px)`,
-                            opacity: offset === 0 ? 1 : 0.5
-                          }}
-                        >
-                          {getSymbol(symbolIndex)}
+              {[0, 1, 2].map((reelIndex) => (
+                <div key={reelIndex} className="reel-wrapper">
+                  <div className="reel-frame" style={{ borderColor: `${currentTheme.colors.primary}40` }}>
+                    <div
+                      className="reel"
+                      style={{
+                        filter: `blur(${reelBlurs[reelIndex]}px)`,
+                        transform: `translateY(${-((reelPositions[reelIndex] % currentTheme.symbols.length) * SYMBOL_HEIGHT) + SYMBOL_HEIGHT}px)`
+                      }}
+                    >
+                      {/* Extended symbols for smooth scrolling */}
+                      {[...currentTheme.symbols, ...currentTheme.symbols, ...currentTheme.symbols].map((symbol, symIndex) => (
+                        <div key={symIndex} className="symbol">
+                          {symbol}
                         </div>
-                      )
-                    })}
+                      ))}
+                    </div>
+
+                    {/* Gradient Overlays */}
+                    <div className="reel-gradient-top" />
+                    <div className="reel-gradient-bottom" />
                   </div>
 
-                  {/* Reel glow when stopped */}
+                  {/* Reel Glow on Stop */}
                   {!isSpinning && result && (
-                    <div className="reel-glow" style={{
-                      animationDelay: `${index * 0.2}s`,
-                      boxShadow: `0 0 30px ${currentTheme.colors.primary}, inset 0 0 20px ${currentTheme.colors.primary}`
-                    }}></div>
+                    <div
+                      className="reel-glow-effect"
+                      style={{
+                        animationDelay: `${reelIndex * 0.15}s`,
+                        boxShadow: `0 0 40px ${currentTheme.colors.glow}, inset 0 0 30px ${currentTheme.colors.glow}`
+                      }}
+                    />
                   )}
                 </div>
               ))}
             </div>
 
-            {/* Win Display */}
-            {showWin && winAmount > 0 && (
-              <div className={`win-display ${
-                winAmount >= betAmount * 100 ? 'jackpot-display' :
-                winAmount >= betAmount * 50 ? 'mega-win-display' :
-                winAmount >= betAmount * 10 ? 'big-win-display' : 'normal-win-display'
-              }`}>
-                {winAmount >= betAmount * 100 ? (
-                  <>
-                    <div className="win-title jackpot-title">💥 JACKPOT! 💥</div>
-                    <div className="win-amount jackpot-amount">{winAmount.toLocaleString()}</div>
-                    <div className="win-subtitle">TOKENS!</div>
-                  </>
-                ) : winAmount >= betAmount * 50 ? (
-                  <>
-                    <div className="win-title mega-win-title">🔥 MEGA WIN! 🔥</div>
-                    <div className="win-amount mega-win-amount">{winAmount.toLocaleString()}</div>
-                    <div className="win-subtitle">TOKENS!</div>
-                  </>
-                ) : winAmount >= betAmount * 10 ? (
-                  <>
-                    <div className="win-title big-win-title">🌟 BIG WIN! 🌟</div>
-                    <div className="win-amount big-win-amount">{winAmount.toLocaleString()}</div>
-                    <div className="win-subtitle">TOKENS!</div>
-                  </>
-                ) : (
-                  <>
-                    <div className="win-title">✨ YOU WIN! ✨</div>
-                    <div className="win-amount">{winAmount.toLocaleString()}</div>
-                    <div className="win-subtitle">TOKENS!</div>
-                  </>
-                )}
-              </div>
-            )}
-
-            {/* Error Display */}
-            {spinMutation.error && (
-              <div className="error-display">
-                ⚠️ {spinMutation.error.message}
+            {/* Current Result Display */}
+            {result && !isSpinning && (
+              <div className="result-display">
+                {result.map((r, i) => (
+                  <span key={i} className="result-symbol">
+                    {getSymbol(r - 1)}
+                  </span>
+                ))}
               </div>
             )}
           </div>
 
-          {/* Particle Effects */}
-          {particles.map(particle => (
-            <div
-              key={particle.id}
-              className="particle"
-              style={{
-                left: `${particle.x}%`,
-                '--particle-color': [currentTheme.colors.primary, currentTheme.colors.secondary, currentTheme.colors.accent][Math.floor(Math.random() * 3)]
-              } as React.CSSProperties}
-            />
-          ))}
+          {/* Win Display Overlay */}
+          {showCelebration && showWin && winAmount > 0 && (
+            <div className={`win-overlay ${celebrationType}`}>
+              <div className="win-content">
+                {celebrationType === 'jackpot' && (
+                  <>
+                    <div className="win-icon">🎰</div>
+                    <div className="win-label jackpot-text">JACKPOT!</div>
+                  </>
+                )}
+                {celebrationType === 'mega' && (
+                  <>
+                    <div className="win-icon">🔥</div>
+                    <div className="win-label mega-text">MEGA WIN!</div>
+                  </>
+                )}
+                {celebrationType === 'big' && (
+                  <>
+                    <div className="win-icon">⭐</div>
+                    <div className="win-label big-text">BIG WIN!</div>
+                  </>
+                )}
+                {celebrationType === 'normal' && (
+                  <>
+                    <div className="win-icon">✨</div>
+                    <div className="win-label">YOU WIN!</div>
+                  </>
+                )}
+                <div className="win-amount" style={{ color: currentTheme.colors.primary }}>
+                  +{winAmount.toLocaleString()}
+                </div>
+                <div className="win-tokens">TOKENS</div>
+              </div>
+            </div>
+          )}
+
+          {/* Particles */}
+          <div className="particles-container">
+            {particles.map(particle => (
+              <div
+                key={particle.id}
+                className="particle"
+                style={{
+                  left: `${particle.x}%`,
+                  top: `${particle.y}%`,
+                  background: particle.color,
+                  boxShadow: `0 0 10px ${particle.color}`
+                }}
+              />
+            ))}
+          </div>
+
+          {/* Bottom Decorations */}
+          <div className="machine-bottom">
+            <div className="marquee-lights">
+              {[...Array(24)].map((_, i) => (
+                <div
+                  key={i}
+                  className={`light ${isSpinning ? 'spinning' : ''}`}
+                  style={{
+                    background: currentTheme.colors.primary,
+                    animationDelay: `${i * 0.08}s`,
+                    boxShadow: `0 0 10px ${currentTheme.colors.glow}`
+                  }}
+                />
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Controls */}
-        <div className="game-controls">
-          <div className="bet-controls card">
-            <div className="control-section">
-              <label className="control-label">BET AMOUNT</label>
-              <div className="bet-input-group">
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setBetAmount(Math.max(1, betAmount - 10))}
-                  disabled={isSpinning}
-                >
-                  -10
-                </button>
+        <div className="controls-section">
+          {/* Bet Controls */}
+          <div className="bet-panel">
+            <div className="panel-header">
+              <span className="panel-icon">💰</span>
+              <span>BET AMOUNT</span>
+            </div>
+
+            <div className="bet-controls">
+              <button
+                className="bet-btn minus"
+                onClick={() => setBetAmount(Math.max(1, betAmount - 10))}
+                disabled={isSpinning}
+              >
+                -10
+              </button>
+
+              <div className="bet-display">
                 <input
                   type="number"
-                  className="input bet-input"
+                  className="bet-input"
                   value={betAmount}
-                  onChange={(e) => setBetAmount(Number(e.target.value))}
-                  min="1"
-                  max="1000"
+                  onChange={(e) => setBetAmount(Math.max(1, Math.min(1000, Number(e.target.value))))}
                   disabled={isSpinning}
                 />
-                <button
-                  className="btn btn-secondary"
-                  onClick={() => setBetAmount(Math.min(1000, betAmount + 10))}
-                  disabled={isSpinning}
-                >
-                  +10
-                </button>
               </div>
+
+              <button
+                className="bet-btn plus"
+                onClick={() => setBetAmount(Math.min(1000, betAmount + 10))}
+                disabled={isSpinning}
+              >
+                +10
+              </button>
             </div>
 
             <div className="quick-bets">
-              <label className="control-label">QUICK BETS</label>
-              <div className="quick-bet-buttons">
-                {[10, 50, 100, 500, 1000].map((amount) => (
-                  <button
-                    key={amount}
-                    className={`btn ${betAmount === amount ? 'btn-primary' : 'btn-secondary'}`}
-                    onClick={() => quickBet(amount)}
-                    disabled={isSpinning}
-                  >
-                    {amount}
-                  </button>
-                ))}
-              </div>
+              {[10, 25, 50, 100, 250, 500].map((amount) => (
+                <button
+                  key={amount}
+                  className={`quick-bet ${betAmount === amount ? 'active' : ''}`}
+                  onClick={() => setBetAmount(amount)}
+                  disabled={isSpinning}
+                  style={betAmount === amount ? { borderColor: currentTheme.colors.primary, color: currentTheme.colors.primary } : {}}
+                >
+                  {amount}
+                </button>
+              ))}
+              <button className="quick-bet max-btn" onClick={maxBet} disabled={isSpinning}>
+                MAX
+              </button>
             </div>
           </div>
 
+          {/* Spin Button */}
           <button
-            className={`btn btn-primary spin-button ${isSpinning ? 'spinning-button' : ''}`}
+            className={`spin-btn ${isSpinning ? 'spinning' : ''}`}
             onClick={handleSpin}
             disabled={isSpinning || !balanceData || balanceData.balance < betAmount}
+            style={{
+              background: `linear-gradient(135deg, ${currentTheme.colors.primary}, ${currentTheme.colors.secondary})`,
+              boxShadow: `0 8px 40px ${currentTheme.colors.glow}`
+            }}
           >
-            {isSpinning ? '🎰 SPINNING... 🎰' : '🎰 SPIN NOW 🎰'}
+            <div className="spin-btn-content">
+              {isSpinning ? (
+                <>
+                  <div className="spinner" />
+                  <span>SPINNING...</span>
+                </>
+              ) : (
+                <>
+                  <span className="spin-icon">🎰</span>
+                  <span>SPIN</span>
+                </>
+              )}
+            </div>
           </button>
 
           {balanceData && balanceData.balance < betAmount && (
-            <p className="insufficient-funds">
-              ⚠️ Insufficient balance! Lower your bet or claim daily bonus.
-            </p>
+            <div className="insufficient-alert">
+              <span>⚠️</span>
+              <span>Insufficient balance</span>
+              <Link to="/daily-bonus" className="claim-link">Claim Bonus</Link>
+            </div>
           )}
         </div>
 
         {/* Paytable */}
-        <div className="paytable card">
-          <h3 className="paytable-title gold-text">💰 PAYTABLE 💰</h3>
+        <div className="paytable">
+          <div className="paytable-header">
+            <span className="paytable-icon">📋</span>
+            <h3>PAYTABLE</h3>
+          </div>
+
           <div className="paytable-grid">
-            {Object.entries(currentTheme.multipliers).slice(0, 5).map(([combo, mult]) => (
-              <div key={combo} className="paytable-row">
-                <div className="paytable-combination">{combo.split('').join(' ')}</div>
-                <div className="paytable-payout gold-text">{mult}x BET{mult >= 500 ? ' - JACKPOT!' : ''}</div>
+            {Object.entries(currentTheme.multipliers).slice(0, 3).map(([combo, mult]) => (
+              <div key={combo} className="paytable-item jackpot-item">
+                <div className="combo">{combo.replace(/(.)/gu, '$1 ').trim()}</div>
+                <div className="payout" style={{ color: currentTheme.colors.primary }}>{mult}x</div>
+                {mult >= 500 && <div className="jackpot-badge">JACKPOT</div>}
               </div>
             ))}
-            <div className="paytable-row">
-              <div className="paytable-combination">Any Three of a Kind</div>
-              <div className="paytable-payout">10x BET</div>
+            <div className="paytable-item">
+              <div className="combo">Any 3 Matching</div>
+              <div className="payout">10x</div>
             </div>
-            <div className="paytable-row">
-              <div className="paytable-combination">Any Two of a Kind</div>
-              <div className="paytable-payout">2x BET</div>
+            <div className="paytable-item">
+              <div className="combo">Any 2 Matching</div>
+              <div className="payout">2x</div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Bottom Ad */}
-      <div style={{ marginTop: '40px' }}>
-        <AdSenseUnit adSlot="9876543210" />
-      </div>
-
       <style>{`
-        .slots-game-page {
+        .slots-page {
           min-height: 100vh;
-          padding: 40px 0 60px;
+          padding: 100px 0 60px;
+          position: relative;
+          overflow: hidden;
         }
 
+        /* Ambient Background */
+        .ambient-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .ambient-orb {
+          position: absolute;
+          border-radius: 50%;
+          filter: blur(150px);
+          opacity: 0.15;
+          animation: float-orb 20s ease-in-out infinite;
+        }
+
+        .orb-1 {
+          width: 500px;
+          height: 500px;
+          top: -100px;
+          right: -100px;
+        }
+
+        .orb-2 {
+          width: 400px;
+          height: 400px;
+          bottom: -100px;
+          left: -100px;
+          animation-delay: -5s;
+        }
+
+        .orb-3 {
+          width: 300px;
+          height: 300px;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          animation-delay: -10s;
+        }
+
+        @keyframes float-orb {
+          0%, 100% { transform: scale(1) translate(0, 0); }
+          33% { transform: scale(1.1) translate(20px, -20px); }
+          66% { transform: scale(0.9) translate(-20px, 20px); }
+        }
+
+        /* Header */
         .game-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
           margin-bottom: 40px;
+          position: relative;
+          z-index: 1;
         }
 
-        .animated-title {
-          font-size: 56px;
-          font-weight: 900;
-          margin-bottom: 30px;
+        .back-btn {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          padding: 12px 20px;
+          background: var(--bg-glass);
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-md);
+          color: var(--text-secondary);
+          text-decoration: none;
+          font-size: 14px;
+          font-weight: 500;
+          transition: all 0.2s ease;
+        }
+
+        .back-btn:hover {
+          background: var(--bg-card);
+          color: var(--text-primary);
+        }
+
+        .header-info {
+          text-align: center;
+        }
+
+        .game-title {
           font-family: 'Cinzel', serif;
-          animation: title-glow 2s ease-in-out infinite;
-          text-shadow: 0 0 20px ${currentTheme.colors.primary}, 0 0 40px ${currentTheme.colors.accent};
+          font-size: 42px;
+          font-weight: 900;
+          margin-bottom: 8px;
+          text-shadow: 0 0 30px currentColor;
+          letter-spacing: 4px;
         }
 
-        @keyframes title-glow {
-          0%, 100% {
-            text-shadow: 0 0 20px ${currentTheme.colors.primary}, 0 0 40px ${currentTheme.colors.accent};
-            transform: scale(1);
-          }
-          50% {
-            text-shadow: 0 0 30px ${currentTheme.colors.primary}, 0 0 60px ${currentTheme.colors.accent};
-            transform: scale(1.05);
-          }
+        .game-subtitle {
+          font-size: 14px;
+          color: var(--text-secondary);
+          letter-spacing: 2px;
         }
 
-        .balance-display {
-          background: rgba(30, 41, 59, 0.8);
-          backdrop-filter: blur(10px);
-          padding: 20px 40px;
-          border-radius: 15px;
-          display: inline-block;
-          border: 2px solid ${currentTheme.colors.primary}80;
-          box-shadow: 0 0 20px ${currentTheme.colors.primary}40;
-          transition: all 0.3s ease;
+        .balance-card {
+          padding: 16px 24px;
+          background: var(--bg-glass);
+          border: 1px solid var(--border-gold);
+          border-radius: var(--radius-lg);
+          text-align: center;
         }
 
         .balance-label {
-          font-size: 14px;
-          color: rgba(255, 255, 255, 0.7);
+          font-size: 10px;
+          color: var(--text-muted);
           letter-spacing: 2px;
-          margin-bottom: 8px;
+          margin-bottom: 4px;
         }
 
-        .balance-amount {
-          font-size: 36px;
-          font-weight: 900;
+        .balance-value {
+          display: flex;
+          align-items: center;
+          gap: 8px;
           font-family: 'Cinzel', serif;
-          transition: all 0.3s ease;
+          font-size: 24px;
+          font-weight: 800;
         }
 
-        .balance-pulse {
-          animation: balance-pulse 0.5s ease-in-out 3;
+        .balance-icon {
+          font-size: 20px;
         }
 
-        @keyframes balance-pulse {
-          0%, 100% { transform: scale(1); }
-          50% { transform: scale(1.1); color: #10b981; }
-        }
-
+        /* Slot Machine */
         .slot-machine {
-          max-width: 900px;
+          max-width: 700px;
           margin: 0 auto 40px;
-          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-          border-radius: 30px;
-          padding: 40px;
           position: relative;
-          box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.6),
-            0 0 0 5px ${currentTheme.colors.primary}20,
-            inset 0 0 100px rgba(0, 0, 0, 0.5);
-          transition: all 0.3s ease;
+          z-index: 1;
         }
 
-        .machine-active {
-          animation: machine-vibrate 0.1s linear infinite;
-          box-shadow:
-            0 20px 60px rgba(0, 0, 0, 0.6),
-            0 0 0 5px ${currentTheme.colors.primary}60,
-            0 0 100px ${currentTheme.colors.primary}40,
-            inset 0 0 100px rgba(0, 0, 0, 0.5);
-        }
-
-        @keyframes machine-vibrate {
-          0%, 100% { transform: translate(0, 0) rotate(0deg); }
-          25% { transform: translate(-2px, 2px) rotate(-0.5deg); }
-          50% { transform: translate(2px, -2px) rotate(0.5deg); }
-          75% { transform: translate(-2px, -2px) rotate(-0.5deg); }
+        .machine-top, .machine-bottom {
+          padding: 12px;
         }
 
         .marquee-lights {
-          position: absolute;
-          top: 10px;
-          left: 10px;
-          right: 10px;
-          height: 20px;
           display: flex;
           justify-content: space-between;
-          gap: 10px;
+          padding: 0 20px;
         }
 
-        .marquee-light {
-          width: 12px;
-          height: 12px;
+        .light {
+          width: 10px;
+          height: 10px;
           border-radius: 50%;
-          background: ${currentTheme.colors.primary};
-          box-shadow: 0 0 15px ${currentTheme.colors.primary}, 0 0 30px ${currentTheme.colors.accent};
-          animation: marquee-blink 1s ease-in-out infinite;
+          animation: blink 2s ease-in-out infinite;
         }
 
-        @keyframes marquee-blink {
+        .light.spinning {
+          animation: blink-fast 0.3s ease-in-out infinite;
+        }
+
+        @keyframes blink {
           0%, 100% { opacity: 1; transform: scale(1); }
           50% { opacity: 0.3; transform: scale(0.8); }
         }
 
-        .slot-body {
-          background: linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4));
-          border-radius: 20px;
-          padding: 40px 30px;
-          position: relative;
-          box-shadow: inset 0 0 50px rgba(0, 0, 0, 0.8);
+        @keyframes blink-fast {
+          0%, 100% { opacity: 1; }
+          50% { opacity: 0.4; }
         }
 
-        .payout-line {
+        .machine-body {
+          background: linear-gradient(180deg, rgba(0,0,0,0.8), rgba(0,0,0,0.6));
+          border-radius: var(--radius-xl);
+          padding: 40px;
+          position: relative;
+          border: 2px solid var(--border-light);
+          box-shadow: inset 0 0 80px rgba(0,0,0,0.8);
+        }
+
+        .win-line {
           position: absolute;
+          left: 40px;
+          right: 40px;
           top: 50%;
-          left: 30px;
-          right: 30px;
-          height: 4px;
-          background: linear-gradient(90deg,
-            transparent,
-            ${currentTheme.colors.primary} 20%,
-            ${currentTheme.colors.primary} 80%,
-            transparent
-          );
+          height: 3px;
           transform: translateY(-50%);
           z-index: 10;
-          box-shadow: 0 0 20px ${currentTheme.colors.primary};
-          animation: line-pulse 2s ease-in-out infinite;
+          border-radius: 2px;
+          animation: line-glow 2s ease-in-out infinite;
         }
 
-        @keyframes line-pulse {
-          0%, 100% { opacity: 0.6; }
-          50% { opacity: 1; box-shadow: 0 0 30px ${currentTheme.colors.primary}; }
+        @keyframes line-glow {
+          0%, 100% { opacity: 0.5; }
+          50% { opacity: 1; }
         }
 
         .reels-container {
           display: flex;
           justify-content: center;
-          gap: 30px;
+          gap: 20px;
+        }
+
+        .reel-wrapper {
           position: relative;
         }
 
-        .reel-window {
-          width: 180px;
-          height: 140px;
-          background: linear-gradient(180deg, rgba(0,0,0,0.9), rgba(0,0,0,0.6), rgba(0,0,0,0.9));
-          border-radius: 20px;
+        .reel-frame {
+          width: 160px;
+          height: 360px;
           overflow: hidden;
+          background: linear-gradient(180deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,0.5) 50%, rgba(0,0,0,0.9) 100%);
+          border-radius: var(--radius-lg);
+          border: 3px solid;
           position: relative;
-          border: 4px solid ${currentTheme.colors.primary}40;
-          box-shadow:
-            inset 0 0 30px rgba(0, 0, 0, 0.8),
-            0 0 20px ${currentTheme.colors.primary}20;
         }
 
         .reel {
           position: absolute;
           width: 100%;
-          height: 100%;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .reel-spinning {
-          animation: reel-blur 0.1s linear infinite;
-        }
-
-        @keyframes reel-blur {
-          0% { transform: translateY(0); }
-          100% { transform: translateY(-10px); }
+          transition: filter 0.1s linear;
         }
 
         .symbol {
-          font-size: 90px;
-          text-align: center;
-          width: 100%;
-          height: 140px;
+          height: ${SYMBOL_HEIGHT}px;
           display: flex;
           align-items: center;
           justify-content: center;
-          transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-          filter: drop-shadow(0 0 10px ${currentTheme.colors.primary}80);
+          font-size: 70px;
+          filter: drop-shadow(0 4px 8px rgba(0,0,0,0.5));
         }
 
-        .symbol-active {
-          animation: symbol-bounce 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-          filter: drop-shadow(0 0 20px ${currentTheme.colors.primary}) drop-shadow(0 0 40px ${currentTheme.colors.accent});
+        .reel-gradient-top,
+        .reel-gradient-bottom {
+          position: absolute;
+          left: 0;
+          right: 0;
+          height: 80px;
+          pointer-events: none;
+          z-index: 5;
         }
 
-        @keyframes symbol-bounce {
-          0% { transform: scale(0.5) rotateY(90deg); opacity: 0; }
-          50% { transform: scale(1.2) rotateY(0deg); }
-          100% { transform: scale(1) rotateY(0deg); opacity: 1; }
+        .reel-gradient-top {
+          top: 0;
+          background: linear-gradient(to bottom, rgba(0,0,0,0.9), transparent);
         }
 
-        .reel-glow {
+        .reel-gradient-bottom {
+          bottom: 0;
+          background: linear-gradient(to top, rgba(0,0,0,0.9), transparent);
+        }
+
+        .reel-glow-effect {
           position: absolute;
           top: 0;
           left: 0;
           right: 0;
           bottom: 0;
-          border-radius: 16px;
+          border-radius: var(--radius-lg);
+          animation: reel-flash 0.6s ease-out;
           pointer-events: none;
-          animation: reel-glow-pulse 1s ease-in-out;
         }
 
-        @keyframes reel-glow-pulse {
+        @keyframes reel-flash {
           0% { opacity: 0; }
-          50% { opacity: 1; }
-          100% { opacity: 0.6; }
+          30% { opacity: 1; }
+          100% { opacity: 0; }
         }
 
-        .particle {
+        .result-display {
+          display: none;
+        }
+
+        /* Win Overlay */
+        .win-overlay {
           position: absolute;
-          width: 10px;
-          height: 10px;
-          background: var(--particle-color, #FFD700);
-          border-radius: 50%;
-          pointer-events: none;
-          animation: particle-float 3s ease-out forwards;
-          box-shadow: 0 0 10px var(--particle-color, #FFD700);
-        }
-
-        @keyframes particle-float {
-          0% {
-            transform: translate(0, 0) rotate(0deg) scale(1);
-            opacity: 1;
-          }
-          100% {
-            transform: translate(
-              calc(var(--x, 0) * 200px),
-              calc(-200px - var(--y, 0) * 100px)
-            ) rotate(720deg) scale(0);
-            opacity: 0;
-          }
-        }
-
-        .win-display {
-          margin-top: 30px;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
           text-align: center;
-          padding: 30px;
-          border-radius: 20px;
-          background: linear-gradient(135deg, rgba(16, 185, 129, 0.2), rgba(5, 150, 105, 0.3));
-          border: 3px solid var(--green);
-          animation: win-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+          z-index: 20;
+          animation: win-popup 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
         }
 
-        .jackpot-display {
-          background: linear-gradient(135deg, rgba(255, 215, 0, 0.3), rgba(255, 140, 0, 0.3));
-          border-color: ${currentTheme.colors.primary};
-          animation: jackpot-pulse 0.5s ease-in-out infinite, win-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        @keyframes win-popup {
+          0% { transform: translate(-50%, -50%) scale(0) rotate(-10deg); opacity: 0; }
+          50% { transform: translate(-50%, -50%) scale(1.1) rotate(5deg); }
+          100% { transform: translate(-50%, -50%) scale(1) rotate(0deg); opacity: 1; }
         }
 
-        .mega-win-display {
-          background: linear-gradient(135deg, rgba(255, 69, 0, 0.3), rgba(255, 215, 0, 0.3));
-          border-color: #FF4500;
-          animation: mega-pulse 0.8s ease-in-out infinite, win-appear 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        .win-content {
+          padding: 32px 64px;
+          background: var(--bg-glass-dark);
+          backdrop-filter: blur(20px);
+          border: 2px solid var(--border-gold);
+          border-radius: var(--radius-xl);
+          box-shadow: 0 20px 60px rgba(0,0,0,0.5), var(--shadow-gold);
         }
 
-        .big-win-display {
-          background: linear-gradient(135deg, rgba(147, 112, 219, 0.3), rgba(255, 215, 0, 0.3));
-          border-color: #9370DB;
+        .win-icon {
+          font-size: 48px;
+          margin-bottom: 8px;
+          animation: bounce 0.5s ease-in-out infinite;
         }
 
-        @keyframes win-appear {
-          0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-          50% { transform: scale(1.1) rotate(10deg); }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
-        }
-
-        @keyframes jackpot-pulse {
-          0%, 100% {
-            transform: scale(1);
-            box-shadow: 0 0 30px ${currentTheme.colors.primary};
-          }
-          50% {
-            transform: scale(1.05);
-            box-shadow: 0 0 60px ${currentTheme.colors.primary}, 0 0 90px ${currentTheme.colors.accent};
-          }
-        }
-
-        @keyframes mega-pulse {
-          0%, 100% { transform: scale(1) rotate(0deg); }
-          25% { transform: scale(1.03) rotate(-1deg); }
-          75% { transform: scale(1.03) rotate(1deg); }
-        }
-
-        .win-title {
-          font-size: 36px;
-          font-weight: 900;
-          margin-bottom: 15px;
+        .win-label {
           font-family: 'Cinzel', serif;
+          font-size: 28px;
+          font-weight: 900;
+          color: var(--text-primary);
+          margin-bottom: 8px;
         }
 
-        .jackpot-title, .mega-win-title, .big-win-title {
-          animation: title-rainbow 1s linear infinite;
-          background: linear-gradient(90deg,
-            ${currentTheme.colors.primary},
-            ${currentTheme.colors.accent},
-            ${currentTheme.colors.secondary},
-            ${currentTheme.colors.primary}
-          );
+        .jackpot-text {
+          font-size: 36px;
+          background: linear-gradient(90deg, #FFD700, #FF6347, #FFD700);
           background-size: 200% auto;
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-          background-clip: text;
-          font-size: 48px;
+          animation: rainbow-text 1s linear infinite;
         }
 
-        @keyframes title-rainbow {
+        .mega-text {
+          color: #FF6347;
+          text-shadow: 0 0 20px rgba(255, 99, 71, 0.5);
+        }
+
+        .big-text {
+          color: #9370DB;
+          text-shadow: 0 0 20px rgba(147, 112, 219, 0.5);
+        }
+
+        @keyframes rainbow-text {
           0% { background-position: 0% center; }
           100% { background-position: 200% center; }
         }
 
         .win-amount {
-          font-size: 56px;
-          font-weight: 900;
           font-family: 'Cinzel', serif;
-          color: ${currentTheme.colors.primary};
-          text-shadow: 0 0 20px ${currentTheme.colors.primary}, 0 0 40px ${currentTheme.colors.accent};
-          animation: amount-count 0.5s ease-out;
+          font-size: 48px;
+          font-weight: 900;
+          text-shadow: 0 0 30px currentColor;
         }
 
-        .jackpot-amount, .mega-win-amount, .big-win-amount {
-          font-size: 72px;
-          animation: amount-explode 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        .win-tokens {
+          font-size: 14px;
+          color: var(--text-muted);
+          letter-spacing: 2px;
         }
 
-        @keyframes amount-count {
-          0% { transform: scale(0); opacity: 0; }
-          50% { transform: scale(1.2); }
-          100% { transform: scale(1); opacity: 1; }
+        /* Jackpot specific animations */
+        .win-overlay.jackpot .win-content {
+          animation: jackpot-glow 0.5s ease-in-out infinite alternate;
         }
 
-        @keyframes amount-explode {
-          0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-          50% { transform: scale(1.3) rotate(10deg); }
-          100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        @keyframes jackpot-glow {
+          0% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(255,215,0,0.3); }
+          100% { box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 80px rgba(255,215,0,0.6); }
         }
 
-        .win-subtitle {
-          font-size: 24px;
-          font-weight: 700;
-          margin-top: 10px;
-          color: var(--text-secondary);
+        /* Particles */
+        .particles-container {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          overflow: hidden;
         }
 
-        .error-display {
-          text-align: center;
-          padding: 20px;
-          border-radius: 15px;
-          margin-top: 20px;
-          background: linear-gradient(135deg, rgba(239, 68, 68, 0.2), rgba(220, 38, 38, 0.2));
-          border: 2px solid var(--red);
-          font-weight: 700;
+        .particle {
+          position: absolute;
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          animation: particle-rise 3s ease-out forwards;
         }
 
-        .game-controls {
-          max-width: 900px;
+        @keyframes particle-rise {
+          0% {
+            transform: translateY(0) scale(1) rotate(0deg);
+            opacity: 1;
+          }
+          100% {
+            transform: translateY(-400px) scale(0) rotate(720deg);
+            opacity: 0;
+          }
+        }
+
+        /* Controls */
+        .controls-section {
+          max-width: 700px;
           margin: 0 auto;
+          position: relative;
+          z-index: 1;
+        }
+
+        .bet-panel {
+          background: var(--bg-glass);
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-xl);
+          padding: 24px;
+          margin-bottom: 24px;
+        }
+
+        .panel-header {
+          display: flex;
+          align-items: center;
+          gap: 8px;
+          font-size: 12px;
+          font-weight: 700;
+          color: var(--gold);
+          letter-spacing: 2px;
+          margin-bottom: 20px;
+        }
+
+        .panel-icon {
+          font-size: 16px;
         }
 
         .bet-controls {
-          margin-bottom: 30px;
+          display: flex;
+          align-items: center;
+          gap: 16px;
+          margin-bottom: 20px;
         }
 
-        .control-section {
-          margin-bottom: 30px;
-        }
-
-        .control-label {
-          display: block;
+        .bet-btn {
+          width: 60px;
+          height: 50px;
+          background: var(--bg-card);
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-md);
+          color: var(--text-primary);
           font-size: 14px;
           font-weight: 700;
-          letter-spacing: 2px;
-          margin-bottom: 15px;
-          color: ${currentTheme.colors.primary};
-          text-shadow: 0 0 10px ${currentTheme.colors.primary}40;
+          cursor: pointer;
+          transition: all 0.2s ease;
         }
 
-        .bet-input-group {
-          display: flex;
-          gap: 15px;
-          align-items: center;
+        .bet-btn:hover:not(:disabled) {
+          background: var(--bg-card-hover);
+          border-color: var(--gold);
         }
 
-        .bet-input {
-          flex: 1;
-          text-align: center;
-          font-size: 24px;
-          font-weight: 700;
-        }
-
-        .quick-bets {
-          margin-top: 20px;
-        }
-
-        .quick-bet-buttons {
-          display: flex;
-          gap: 10px;
-          flex-wrap: wrap;
-        }
-
-        .quick-bet-buttons .btn {
-          flex: 1;
-          min-width: 80px;
-        }
-
-        .spin-button {
-          width: 100%;
-          padding: 25px;
-          font-size: 32px;
-          font-weight: 900;
-          margin-bottom: 20px;
-          position: relative;
-          overflow: hidden;
-          transition: all 0.3s ease;
-        }
-
-        .spin-button:not(:disabled):hover {
-          transform: scale(1.05);
-          box-shadow: 0 0 30px ${currentTheme.colors.primary};
-        }
-
-        .spinning-button {
-          animation: button-glow 1s ease-in-out infinite;
-        }
-
-        @keyframes button-glow {
-          0%, 100% { box-shadow: 0 0 20px ${currentTheme.colors.primary}; }
-          50% { box-shadow: 0 0 40px ${currentTheme.colors.primary}, 0 0 60px ${currentTheme.colors.accent}; }
-        }
-
-        .spin-button:disabled {
+        .bet-btn:disabled {
           opacity: 0.5;
           cursor: not-allowed;
         }
 
-        .insufficient-funds {
-          text-align: center;
-          color: var(--red);
-          font-weight: 600;
-          margin-top: 10px;
-          animation: warning-pulse 1s ease-in-out infinite;
+        .bet-display {
+          flex: 1;
         }
 
-        @keyframes warning-pulse {
-          0%, 100% { opacity: 1; }
-          50% { opacity: 0.6; }
-        }
-
-        .paytable {
-          max-width: 700px;
-          margin: 40px auto 0;
-        }
-
-        .paytable-title {
-          text-align: center;
-          font-size: 32px;
-          font-weight: 900;
-          margin-bottom: 30px;
+        .bet-input {
+          width: 100%;
+          height: 50px;
+          background: var(--bg-dark);
+          border: 2px solid var(--border-gold);
+          border-radius: var(--radius-md);
+          color: var(--gold);
           font-family: 'Cinzel', serif;
-          text-shadow: 0 0 20px ${currentTheme.colors.primary}80;
+          font-size: 28px;
+          font-weight: 800;
+          text-align: center;
+          outline: none;
         }
 
-        .paytable-grid {
-          display: flex;
-          flex-direction: column;
-          gap: 15px;
+        .bet-input:focus {
+          box-shadow: 0 0 20px var(--gold-glow);
         }
 
-        .paytable-row {
+        .quick-bets {
           display: flex;
-          justify-content: space-between;
-          align-items: center;
-          padding: 18px 24px;
-          background: rgba(0, 0, 0, 0.4);
-          border-radius: 12px;
-          border: 2px solid ${currentTheme.colors.primary}30;
+          gap: 8px;
+          flex-wrap: wrap;
+        }
+
+        .quick-bet {
+          flex: 1;
+          min-width: 60px;
+          padding: 12px;
+          background: var(--bg-card);
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-md);
+          color: var(--text-secondary);
+          font-size: 14px;
+          font-weight: 600;
+          cursor: pointer;
+          transition: all 0.2s ease;
+        }
+
+        .quick-bet:hover:not(:disabled) {
+          background: var(--bg-card-hover);
+          color: var(--text-primary);
+        }
+
+        .quick-bet.active {
+          background: rgba(255,215,0,0.15);
+        }
+
+        .quick-bet:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+
+        .max-btn {
+          background: var(--gradient-gold);
+          color: var(--bg-deepest);
+          border-color: transparent;
+        }
+
+        /* Spin Button */
+        .spin-btn {
+          width: 100%;
+          padding: 24px;
+          border: none;
+          border-radius: var(--radius-xl);
+          font-size: 24px;
+          font-weight: 900;
+          font-family: 'Cinzel', serif;
+          color: var(--bg-deepest);
+          cursor: pointer;
           transition: all 0.3s ease;
+          letter-spacing: 3px;
+          margin-bottom: 16px;
         }
 
-        .paytable-row:hover {
-          background: rgba(0, 0, 0, 0.6);
-          border-color: ${currentTheme.colors.primary}80;
-          transform: translateX(10px);
-          box-shadow: 0 0 20px ${currentTheme.colors.primary}40;
+        .spin-btn:hover:not(:disabled) {
+          transform: translateY(-4px);
+          box-shadow: 0 12px 50px var(--gold-glow);
         }
 
-        .paytable-combination {
+        .spin-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .spin-btn-content {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+        }
+
+        .spin-icon {
           font-size: 28px;
         }
 
-        .paytable-payout {
+        .spin-btn .spinner {
+          width: 24px;
+          height: 24px;
+          border: 3px solid rgba(0,0,0,0.2);
+          border-top-color: var(--bg-deepest);
+          border-radius: 50%;
+          animation: spin 0.8s linear infinite;
+        }
+
+        .spin-btn.spinning {
+          animation: btn-pulse 1s ease-in-out infinite;
+        }
+
+        @keyframes btn-pulse {
+          0%, 100% { transform: scale(1); }
+          50% { transform: scale(1.02); }
+        }
+
+        .insufficient-alert {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: 16px;
+          background: rgba(255, 71, 87, 0.1);
+          border: 1px solid var(--red);
+          border-radius: var(--radius-md);
+          color: var(--red);
+          font-size: 14px;
+        }
+
+        .claim-link {
+          color: var(--gold);
+          font-weight: 600;
+          text-decoration: underline;
+        }
+
+        /* Paytable */
+        .paytable {
+          max-width: 700px;
+          margin: 40px auto 0;
+          background: var(--bg-glass);
+          border: 1px solid var(--border-light);
+          border-radius: var(--radius-xl);
+          padding: 24px;
+          position: relative;
+          z-index: 1;
+        }
+
+        .paytable-header {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          margin-bottom: 24px;
+        }
+
+        .paytable-icon {
+          font-size: 24px;
+        }
+
+        .paytable-header h3 {
+          font-family: 'Cinzel', serif;
           font-size: 20px;
           font-weight: 700;
-          color: ${currentTheme.colors.primary};
-          text-shadow: 0 0 10px ${currentTheme.colors.primary}80;
+          color: var(--gold);
+          letter-spacing: 2px;
         }
 
-        @keyframes screen-shake {
-          0%, 100% { transform: translate(0, 0); }
-          10%, 30%, 50%, 70%, 90% { transform: translate(-10px, -10px); }
-          20%, 40%, 60%, 80% { transform: translate(10px, 10px); }
+        .paytable-grid {
+          display: grid;
+          gap: 12px;
         }
 
-        body.screen-shake {
-          animation: screen-shake 0.5s;
+        .paytable-item {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          padding: 16px 20px;
+          background: var(--bg-dark);
+          border: 1px solid var(--border-subtle);
+          border-radius: var(--radius-md);
+          transition: all 0.2s ease;
         }
 
+        .paytable-item:hover {
+          border-color: var(--border-gold);
+          transform: translateX(8px);
+        }
+
+        .jackpot-item {
+          border-color: var(--border-gold);
+          background: rgba(255,215,0,0.05);
+        }
+
+        .combo {
+          font-size: 24px;
+        }
+
+        .payout {
+          font-family: 'Cinzel', serif;
+          font-size: 20px;
+          font-weight: 800;
+        }
+
+        .jackpot-badge {
+          padding: 4px 12px;
+          background: var(--gradient-gold);
+          color: var(--bg-deepest);
+          font-size: 10px;
+          font-weight: 800;
+          border-radius: var(--radius-full);
+          letter-spacing: 1px;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
-          .animated-title {
-            font-size: 32px;
+          .slots-page {
+            padding: 80px 0 40px;
           }
 
-          .slot-machine {
-            padding: 20px;
+          .game-header {
+            flex-direction: column;
+            gap: 16px;
+            text-align: center;
+          }
+
+          .back-btn {
+            align-self: flex-start;
+          }
+
+          .game-title {
+            font-size: 28px;
+          }
+
+          .machine-body {
+            padding: 24px 16px;
           }
 
           .reels-container {
-            gap: 15px;
+            gap: 12px;
           }
 
-          .reel-window {
+          .reel-frame {
             width: 100px;
-            height: 90px;
+            height: 240px;
           }
 
           .symbol {
-            font-size: 50px;
-            height: 90px;
+            height: 80px;
+            font-size: 45px;
           }
 
-          .marquee-lights {
-            gap: 5px;
-          }
-
-          .marquee-light {
-            width: 8px;
-            height: 8px;
-          }
-
-          .bet-input-group {
-            flex-direction: column;
-          }
-
-          .spin-button {
-            font-size: 24px;
-          }
-
-          .win-title {
-            font-size: 24px;
+          .win-content {
+            padding: 24px 32px;
           }
 
           .win-amount {
             font-size: 36px;
           }
 
-          .jackpot-title, .mega-win-title, .big-win-title {
-            font-size: 32px;
+          .bet-controls {
+            flex-wrap: wrap;
           }
 
-          .jackpot-amount, .mega-win-amount, .big-win-amount {
-            font-size: 48px;
+          .spin-btn {
+            font-size: 18px;
+            padding: 20px;
+          }
+
+          .combo {
+            font-size: 18px;
           }
         }
       `}</style>
