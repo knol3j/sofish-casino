@@ -1,6 +1,8 @@
 import { useState, useRef, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
+import { motion, AnimatePresence } from 'framer-motion'
 import { useSpinSlots, useUserBalance } from '../hooks/useGames'
+import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
 
 interface SlotTheme {
   name: string
@@ -276,37 +278,69 @@ export function SlotsGame() {
   }
 
   return (
-    <div className="slots-page" style={{ background: currentTheme.background }}>
+    <motion.div
+      className="slots-page"
+      style={{ background: currentTheme.background }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Ambient Background Effects */}
       <div className="ambient-bg">
-        <div className="ambient-orb orb-1" style={{ background: currentTheme.colors.primary }} />
-        <div className="ambient-orb orb-2" style={{ background: currentTheme.colors.secondary }} />
-        <div className="ambient-orb orb-3" style={{ background: currentTheme.colors.accent }} />
+        <GlowingOrbs
+          count={5}
+          colors={[currentTheme.colors.primary, currentTheme.colors.secondary, currentTheme.colors.accent]}
+        />
       </div>
 
       <div className="container">
         {/* Header */}
-        <div className="game-header">
+        <motion.div
+          className="game-header"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
           <Link to="/slots-hub" className="back-btn">
-            <span>←</span>
+            <motion.span whileHover={{ x: -3 }}>←</motion.span>
             <span>All Slots</span>
           </Link>
 
-          <div className="header-info">
+          <motion.div
+            className="header-info"
+            initial={{ scale: 0.9 }}
+            animate={{ scale: 1 }}
+            transition={{ delay: 0.2, type: 'spring' }}
+          >
             <h1 className="game-title" style={{ color: currentTheme.colors.primary }}>
-              {currentTheme.name}
+              <GradientText gradient={`linear-gradient(135deg, ${currentTheme.colors.primary}, ${currentTheme.colors.secondary})`}>
+                {currentTheme.name}
+              </GradientText>
             </h1>
             <p className="game-subtitle">{currentTheme.subtitle}</p>
-          </div>
+          </motion.div>
 
-          <div className="balance-card">
+          <motion.div
+            className="balance-card"
+            whileHover={{ scale: 1.05 }}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
             <div className="balance-label">BALANCE</div>
-            <div className="balance-value" style={{ color: currentTheme.colors.primary }}>
-              <span className="balance-icon">💰</span>
+            <motion.div
+              className="balance-value"
+              style={{ color: currentTheme.colors.primary }}
+              animate={showWin ? { scale: [1, 1.1, 1] } : {}}
+              transition={{ duration: 0.3 }}
+            >
+              <FloatingElement duration={2} y={3}>
+                <span className="balance-icon">💰</span>
+              </FloatingElement>
               <span className="balance-amount">{balanceData?.balance?.toLocaleString() || 0}</span>
-            </div>
-          </div>
-        </div>
+            </motion.div>
+          </motion.div>
+        </motion.div>
 
         {/* Slot Machine */}
         <div className="slot-machine">
@@ -509,7 +543,7 @@ export function SlotsGame() {
           </div>
 
           {/* Spin Button */}
-          <button
+          <motion.button
             className={`spin-btn ${isSpinning ? 'spinning' : ''}`}
             onClick={handleSpin}
             disabled={isSpinning || !balanceData || balanceData.balance < betAmount}
@@ -517,21 +551,49 @@ export function SlotsGame() {
               background: `linear-gradient(135deg, ${currentTheme.colors.primary}, ${currentTheme.colors.secondary})`,
               boxShadow: `0 8px 40px ${currentTheme.colors.glow}`
             }}
+            whileHover={{ scale: 1.05, boxShadow: `0 12px 50px ${currentTheme.colors.glow}` }}
+            whileTap={{ scale: 0.95 }}
+            animate={isSpinning ? { rotate: [0, 5, -5, 0] } : {}}
+            transition={isSpinning ? { duration: 0.3, repeat: Infinity } : { duration: 0.2 }}
           >
             <div className="spin-btn-content">
-              {isSpinning ? (
-                <>
-                  <div className="spinner" />
-                  <span>SPINNING...</span>
-                </>
-              ) : (
-                <>
-                  <span className="spin-icon">🎰</span>
-                  <span>SPIN</span>
-                </>
-              )}
+              <AnimatePresence mode="wait">
+                {isSpinning ? (
+                  <motion.div
+                    key="spinning"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12 }}
+                  >
+                    <motion.div
+                      className="spinner"
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    />
+                    <span>SPINNING...</span>
+                  </motion.div>
+                ) : (
+                  <motion.div
+                    key="spin"
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    style={{ display: 'flex', alignItems: 'center', gap: 12 }}
+                  >
+                    <motion.span
+                      className="spin-icon"
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    >
+                      🎰
+                    </motion.span>
+                    <span>SPIN</span>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </button>
+          </motion.button>
 
           {balanceData && balanceData.balance < betAmount && (
             <div className="insufficient-alert">
@@ -1297,6 +1359,6 @@ export function SlotsGame() {
           }
         }
       `}</style>
-    </div>
+    </motion.div>
   )
 }

@@ -1,67 +1,27 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { ShaderBackground, GlitchText, NeonBorder } from '../components/ShaderEffects'
-import { Card3D, HolographicCard, MagneticButton, FloatingElement } from '../components/Card3D'
-
-// Progressive Jackpot Counter Component
-function JackpotCounter() {
-  const [amount, setAmount] = useState(2847293.58)
-  const [isIncrementing, setIsIncrementing] = useState(false)
-
-  useEffect(() => {
-    // Simulate progressive jackpot growing
-    const interval = setInterval(() => {
-      setIsIncrementing(true)
-      setAmount(prev => prev + Math.random() * 50 + 10)
-      setTimeout(() => setIsIncrementing(false), 300)
-    }, 2000 + Math.random() * 3000)
-
-    return () => clearInterval(interval)
-  }, [])
-
-  return (
-    <div className={`jackpot-counter ${isIncrementing ? 'incrementing' : ''}`}>
-      <div className="jackpot-label">
-        <span className="jackpot-icon">🎰</span>
-        <span>PROGRESSIVE JACKPOT</span>
-      </div>
-      <div className="jackpot-amount">
-        <span className="currency">$</span>
-        <span className="amount">{amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
-      </div>
-      <div className="jackpot-glow" />
-    </div>
-  )
-}
-
-// Floating Coins Component
-function FloatingCoins() {
-  const coins = ['🪙', '💰', '💎', '⭐', '✨']
-  return (
-    <div className="floating-coins">
-      {[...Array(15)].map((_, i) => (
-        <div
-          key={i}
-          className="floating-coin"
-          style={{
-            left: `${Math.random() * 100}%`,
-            animationDelay: `${Math.random() * 10}s`,
-            animationDuration: `${8 + Math.random() * 8}s`,
-            fontSize: `${20 + Math.random() * 30}px`
-          }}
-        >
-          {coins[Math.floor(Math.random() * coins.length)]}
-        </div>
-      ))}
-    </div>
-  )
-}
+import { motion } from 'framer-motion'
+import { ShaderBackground } from '../components/ShaderEffects'
+import {
+  CASINO_IMAGES,
+  GlowingOrbs,
+  JackpotDisplay,
+  GameCard,
+  VIPTierCard,
+  FeatureCard,
+  Reveal,
+  FloatingElement,
+  GradientText,
+  TiltCard,
+  Shimmer,
+  staggerContainer
+} from '../components/EnhancedUI'
 
 // Simulated live wins for the ticker
 const generateLiveWin = () => {
-  const games = ['Slots', 'Roulette', 'Blackjack', 'Fish Hunter']
-  const names = ['Alex***', 'John***', 'Sarah***', 'Mike***', 'Emma***', 'Chris***', 'Luna***', 'Max***']
-  const amounts = [150, 500, 1200, 2500, 5000, 8500, 12000, 25000, 50000]
+  const games = ['Slots', 'Roulette', 'Blackjack', 'Fish Hunter', "Dragon's Fortune", 'Diamond Deluxe']
+  const names = ['Alex***', 'John***', 'Sarah***', 'Mike***', 'Emma***', 'Chris***', 'Luna***', 'Max***', 'Zara***', 'Leo***']
+  const amounts = [150, 500, 1200, 2500, 5000, 8500, 12000, 25000, 50000, 100000]
   return {
     id: Date.now() + Math.random(),
     player: names[Math.floor(Math.random() * names.length)],
@@ -75,10 +35,11 @@ const FEATURED_GAMES = [
   {
     id: 'fish-hunter',
     name: 'Fish Hunter',
-    description: 'Skill-based arcade action with massive multipliers',
-    image: '🎣',
+    description: 'Skill-based arcade action with massive multipliers up to 5,000x',
+    image: CASINO_IMAGES.fishing,
+    icon: '🎣',
     badge: 'FEATURED',
-    badgeType: 'gold',
+    badgeColor: '#FFD700',
     rtp: '96.5%',
     maxWin: '5,000x',
     path: '/fishing-hub'
@@ -86,10 +47,11 @@ const FEATURED_GAMES = [
   {
     id: 'dragon-slots',
     name: "Dragon's Fortune",
-    description: 'Epic Asian-themed slots with 888x jackpots',
-    image: '🐉',
+    description: 'Epic Asian-themed slots with legendary 888x jackpots',
+    image: CASINO_IMAGES.slots.dragon,
+    icon: '🐉',
     badge: 'HOT',
-    badgeType: 'red',
+    badgeColor: '#FF4757',
     rtp: '97.2%',
     maxWin: '888x',
     path: '/slots/dragon'
@@ -97,10 +59,11 @@ const FEATURED_GAMES = [
   {
     id: 'diamond-slots',
     name: 'Diamond Deluxe',
-    description: 'Luxury high-roller slots experience',
-    image: '💎',
+    description: 'Luxury high-roller slots for VIP players',
+    image: CASINO_IMAGES.slots.diamond,
+    icon: '💎',
     badge: 'VIP',
-    badgeType: 'purple',
+    badgeColor: '#8B5CF6',
     rtp: '98.1%',
     maxWin: '500x',
     path: '/slots/diamond'
@@ -108,10 +71,11 @@ const FEATURED_GAMES = [
   {
     id: 'roulette',
     name: 'European Roulette',
-    description: 'Classic casino table game with premium graphics',
-    image: '🎰',
+    description: 'Classic casino table game with immersive graphics',
+    image: CASINO_IMAGES.roulette,
+    icon: '🎰',
     badge: 'CLASSIC',
-    badgeType: 'blue',
+    badgeColor: '#0095FF',
     rtp: '97.3%',
     maxWin: '35x',
     path: '/roulette'
@@ -120,9 +84,10 @@ const FEATURED_GAMES = [
     id: 'blackjack',
     name: 'Blackjack Pro',
     description: 'Beat the dealer with strategy and skill',
-    image: '🃏',
+    image: CASINO_IMAGES.blackjack,
+    icon: '🃏',
     badge: 'POPULAR',
-    badgeType: 'green',
+    badgeColor: '#00D68F',
     rtp: '99.5%',
     maxWin: '3x',
     path: '/blackjack'
@@ -130,10 +95,11 @@ const FEATURED_GAMES = [
   {
     id: 'satoshi',
     name: "Satoshi's Secret",
-    description: 'Crypto-themed 5-reel adventure',
-    image: '₿',
+    description: 'Crypto-themed adventure with 50,000x potential',
+    image: CASINO_IMAGES.slots.vegas,
+    icon: '₿',
     badge: 'NEW',
-    badgeType: 'cyan',
+    badgeColor: '#00D4AA',
     rtp: '96.8%',
     maxWin: '50,000x',
     path: '/slots/endorphina/satoshis-secret'
@@ -148,30 +114,87 @@ const VIP_TIERS = [
   { name: 'Diamond', icon: '👑', cashback: '25%', bonus: '200%', color: '#B9F2FF' }
 ]
 
+const FEATURES = [
+  { icon: '🎮', title: 'Premium Games', description: 'Curated collection of the best casino games with stunning graphics and smooth gameplay' },
+  { icon: '⚡', title: 'Instant Payouts', description: 'Win and get your tokens instantly. No waiting, no delays, just pure excitement' },
+  { icon: '🔒', title: 'Secure Platform', description: 'Bank-grade security with encrypted transactions and provably fair games' },
+  { icon: '🎁', title: 'Daily Rewards', description: 'Claim free tokens every day with our generous daily bonus system' },
+  { icon: '📱', title: 'Play Anywhere', description: 'Fully responsive design works perfectly on desktop, tablet, and mobile' },
+  { icon: '🏆', title: 'Leaderboards', description: 'Compete with players worldwide and climb to the top of our leaderboards' }
+]
+
+// Floating Coins Component
+function FloatingCoins() {
+  const coins = ['🪙', '💰', '💎', '⭐', '✨', '🎰', '🎲']
+  return (
+    <div className="floating-coins">
+      {[...Array(20)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="floating-coin"
+          initial={{ y: '110vh', opacity: 0, rotate: 0 }}
+          animate={{
+            y: '-10vh',
+            opacity: [0, 0.7, 0.7, 0],
+            rotate: 720
+          }}
+          transition={{
+            duration: 10 + Math.random() * 8,
+            repeat: Infinity,
+            delay: Math.random() * 10,
+            ease: 'linear'
+          }}
+          style={{
+            position: 'absolute',
+            left: `${Math.random() * 100}%`,
+            fontSize: `${20 + Math.random() * 30}px`,
+            filter: 'drop-shadow(0 0 10px rgba(255, 215, 0, 0.5))'
+          }}
+        >
+          {coins[Math.floor(Math.random() * coins.length)]}
+        </motion.div>
+      ))}
+    </div>
+  )
+}
+
+// Stats Counter Component
+function StatsCounter({ value, label }: { value: string; label: string }) {
+  return (
+    <motion.div
+      className="hero-stat"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <motion.div
+        className="hero-stat-value"
+        animate={{ scale: [1, 1.02, 1] }}
+        transition={{ duration: 2, repeat: Infinity }}
+      >
+        <GradientText animate>{value}</GradientText>
+      </motion.div>
+      <div className="hero-stat-label">{label}</div>
+    </motion.div>
+  )
+}
+
 export function Home() {
   const [liveWins, setLiveWins] = useState<Array<{ id: number; player: string; game: string; amount: number; time: string }>>([])
-  const [activeGameIndex, setActiveGameIndex] = useState(0)
 
   useEffect(() => {
     // Initialize with some wins
-    const initialWins = Array(5).fill(null).map(() => generateLiveWin())
+    const initialWins = Array(8).fill(null).map(() => generateLiveWin())
     setLiveWins(initialWins)
 
     // Add new wins periodically
     const interval = setInterval(() => {
       setLiveWins(prev => {
         const newWin = generateLiveWin()
-        return [newWin, ...prev.slice(0, 9)]
+        return [newWin, ...prev.slice(0, 11)]
       })
     }, 3000)
 
-    return () => clearInterval(interval)
-  }, [])
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setActiveGameIndex(prev => (prev + 1) % FEATURED_GAMES.length)
-    }, 4000)
     return () => clearInterval(interval)
   }, [])
 
@@ -182,352 +205,396 @@ export function Home() {
 
       {/* Hero Section */}
       <section className="hero">
+        {/* Background Image with Overlay */}
         <div className="hero-bg">
-          <div className="hero-particles">
-            {[...Array(50)].map((_, i) => (
-              <div key={i} className="particle" style={{
-                left: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 5}s`,
-                animationDuration: `${15 + Math.random() * 10}s`
-              }} />
-            ))}
-          </div>
+          <div className="hero-image-bg" style={{
+            backgroundImage: `url(${CASINO_IMAGES.heroBackground})`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            position: 'absolute',
+            inset: 0,
+            opacity: 0.15
+          }} />
+          <GlowingOrbs count={6} colors={['#FFD700', '#8B5CF6', '#00D4AA', '#FF4757', '#00D9FF']} />
           <FloatingCoins />
-          <div className="hero-glow hero-glow-1" />
-          <div className="hero-glow hero-glow-2" />
-          <div className="hero-glow hero-glow-3" />
           <div className="neon-grid" />
-          {/* Morphing Blob Effects */}
-          <div className="blob-bg" style={{ top: '20%', left: '10%' }} />
-          <div className="blob-bg" style={{ top: '60%', right: '10%', animationDelay: '2s' }} />
         </div>
 
         <div className="container">
-          <div className="hero-content">
-            <div className="hero-badge animate-fadeInDown">
-              <span className="badge-icon">⭐</span>
+          <motion.div
+            className="hero-content"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8 }}
+          >
+            {/* Badge */}
+            <motion.div
+              className="hero-badge"
+              initial={{ opacity: 0, y: -30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 }}
+            >
+              <motion.span
+                animate={{ rotate: [0, 15, -15, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ⭐
+              </motion.span>
               <span>Premium Gaming Experience</span>
-            </div>
+            </motion.div>
 
             {/* Progressive Jackpot */}
-            <JackpotCounter />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.3 }}
+            >
+              <JackpotDisplay amount={2847293.58} />
+            </motion.div>
 
-            <h1 className="hero-title animate-fadeInUp">
-              Welcome to <span className="holo-shimmer">SOFISH</span>
+            {/* Title */}
+            <motion.h1
+              className="hero-title"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 }}
+            >
+              Welcome to{' '}
+              <Shimmer>
+                <GradientText
+                  gradient="linear-gradient(135deg, #FFE55C, #FFD700, #FFA500, #FFD700)"
+                  animate
+                >
+                  SOFISH
+                </GradientText>
+              </Shimmer>
               <br />
-              <span className="hero-title-sub cyber-text">Casino</span>
-            </h1>
+              <span className="hero-title-sub">Casino</span>
+            </motion.h1>
 
-            <p className="hero-subtitle animate-fadeInUp">
+            {/* Subtitle */}
+            <motion.p
+              className="hero-subtitle"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.5 }}
+            >
               Experience the thrill of Las Vegas from anywhere. Premium games,
               instant payouts, and exclusive rewards await you.
-            </p>
+            </motion.p>
 
-            <NeonBorder color="#FFD700" intensity={1.5}>
-              <div className="hero-stats animate-fadeInUp glass-pro">
-                <div className="hero-stat">
-                  <div className="hero-stat-value holo-shimmer">$2.5M+</div>
-                  <div className="hero-stat-label">Total Payouts</div>
-                </div>
-                <div className="hero-stat-divider" />
-                <div className="hero-stat">
-                  <div className="hero-stat-value holo-shimmer">100K+</div>
-                  <div className="hero-stat-label">Active Players</div>
-                </div>
-                <div className="hero-stat-divider" />
-                <div className="hero-stat">
-                  <div className="hero-stat-value holo-shimmer">50M+</div>
-                  <div className="hero-stat-label">Games Played</div>
-                </div>
-              </div>
-            </NeonBorder>
+            {/* Stats */}
+            <motion.div
+              className="hero-stats glass-pro"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <StatsCounter value="$2.5M+" label="Total Payouts" />
+              <div className="hero-stat-divider" />
+              <StatsCounter value="100K+" label="Active Players" />
+              <div className="hero-stat-divider" />
+              <StatsCounter value="50M+" label="Games Played" />
+            </motion.div>
 
-            <div className="hero-cta animate-fadeInUp">
+            {/* CTA Buttons */}
+            <motion.div
+              className="hero-cta"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+            >
               <Link to="/login">
-                <MagneticButton className="hero-magnetic-btn">
+                <motion.button
+                  className="btn btn-primary btn-xl"
+                  whileHover={{ scale: 1.05, boxShadow: '0 10px 40px rgba(255, 215, 0, 0.5)' }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <span>🎰</span>
                   Start Playing Now
-                </MagneticButton>
+                </motion.button>
               </Link>
               <Link to="/games">
-                <button className="btn btn-outline btn-xl liquid-btn">
+                <motion.button
+                  className="btn btn-outline btn-xl"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   Explore Games
-                </button>
+                </motion.button>
               </Link>
-            </div>
+            </motion.div>
 
-            <div className="hero-trust animate-fadeIn">
-              <div className="trust-item">
-                <span className="trust-icon">🔒</span>
-                <span>Secure & Fair</span>
-              </div>
-              <div className="trust-item">
-                <span className="trust-icon">⚡</span>
-                <span>Instant Payouts</span>
-              </div>
-              <div className="trust-item">
-                <span className="trust-icon">🏆</span>
-                <span>24/7 Support</span>
-              </div>
-            </div>
-          </div>
+            {/* Trust Badges */}
+            <motion.div
+              className="hero-trust"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+            >
+              {[
+                { icon: '🔒', text: 'Secure & Fair' },
+                { icon: '⚡', text: 'Instant Payouts' },
+                { icon: '🏆', text: '24/7 Support' }
+              ].map((item, i) => (
+                <motion.div
+                  key={item.text}
+                  className="trust-item"
+                  whileHover={{ scale: 1.1 }}
+                  transition={{ delay: i * 0.1 }}
+                >
+                  <span className="trust-icon">{item.icon}</span>
+                  <span>{item.text}</span>
+                </motion.div>
+              ))}
+            </motion.div>
+          </motion.div>
         </div>
+
+        {/* Scroll Indicator */}
+        <motion.div
+          className="scroll-indicator"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1, y: [0, 10, 0] }}
+          transition={{ delay: 1.5, y: { duration: 1.5, repeat: Infinity } }}
+        >
+          <span>Scroll to explore</span>
+          <motion.div className="scroll-arrow">↓</motion.div>
+        </motion.div>
       </section>
 
       {/* Live Wins Ticker */}
       <section className="live-wins-section">
-        <div className="container">
-          <div className="live-wins-header">
-            <div className="live-indicator">
-              <span className="live-dot" />
-              <span>LIVE WINS</span>
-            </div>
+        <div className="live-wins-header">
+          <div className="live-indicator">
+            <motion.span
+              className="live-dot"
+              animate={{ opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+            />
+            <span>LIVE WINS</span>
           </div>
-          <div className="live-wins-ticker">
-            <div className="ticker-track">
-              {liveWins.map((win) => (
-                <div key={win.id} className="win-item animate-slideInLeft">
-                  <span className="win-player">{win.player}</span>
-                  <span className="win-text">won</span>
-                  <span className="win-amount">{win.amount.toLocaleString()}</span>
-                  <span className="win-tokens">tokens</span>
-                  <span className="win-game">in {win.game}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+        </div>
+        <div className="live-wins-ticker">
+          <motion.div
+            className="ticker-track"
+            animate={{ x: ['0%', '-50%'] }}
+            transition={{ duration: 30, repeat: Infinity, ease: 'linear' }}
+          >
+            {[...liveWins, ...liveWins].map((win, i) => (
+              <motion.div
+                key={`${win.id}-${i}`}
+                className="win-item"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05, borderColor: 'var(--gold)' }}
+              >
+                <span className="win-player">{win.player}</span>
+                <span className="win-text">won</span>
+                <motion.span
+                  className="win-amount"
+                  animate={{ color: ['#FFD700', '#FFA500', '#FFD700'] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                >
+                  {win.amount.toLocaleString()}
+                </motion.span>
+                <span className="win-tokens">tokens</span>
+                <span className="win-game">in {win.game}</span>
+              </motion.div>
+            ))}
+          </motion.div>
         </div>
       </section>
 
       {/* Featured Games */}
       <section className="featured-section">
         <div className="container">
-          <div className="section-header">
-            <div className="section-label">
-              <span className="label-icon">🔥</span>
-              Featured Games
-            </div>
-            <h2 className="section-title">
-              Play the <span className="text-gradient-gold">Best Games</span>
-            </h2>
-            <p className="section-subtitle">
-              Hand-picked selection of our most popular and rewarding games
-            </p>
-          </div>
-
-          <div className="featured-grid">
-            {FEATURED_GAMES.map((game, index) => (
-              <Card3D
-                key={game.id}
-                glowColor={game.badgeType === 'gold' ? '#FFD700' : game.badgeType === 'cyan' ? '#00FFFF' : '#00D4AA'}
-                maxRotation={12}
-                intensity={1.2}
-              >
-                <Link
-                  to={game.path}
-                  className={`game-card depth-shadow ${index === activeGameIndex ? 'game-card-featured' : ''}`}
-                  style={{ animationDelay: `${index * 0.1}s` }}
+          <Reveal>
+            <div className="section-header">
+              <div className="section-label">
+                <motion.span
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.5, repeat: Infinity, repeatDelay: 2 }}
                 >
-                  <div className={`game-badge badge-${game.badgeType}`}>
-                    {game.badge}
-                  </div>
+                  🔥
+                </motion.span>
+                Featured Games
+              </div>
+              <h2 className="section-title">
+                Play the <GradientText>Best Games</GradientText>
+              </h2>
+              <p className="section-subtitle">
+                Hand-picked selection of our most popular and rewarding games
+              </p>
+            </div>
+          </Reveal>
 
-                  <div className="game-icon-wrapper">
-                    <FloatingElement amplitude={8} duration={3} delay={index * 0.5}>
-                      <div className="game-icon">{game.image}</div>
-                    </FloatingElement>
-                    <div className="game-icon-glow" />
-                  </div>
-
-                  <div className="game-info">
-                    <h3 className="game-name">{game.name}</h3>
-                    <p className="game-desc">{game.description}</p>
-                  </div>
-
-                  <div className="game-stats">
-                    <div className="game-stat">
-                      <span className="stat-label">RTP</span>
-                      <span className="stat-value">{game.rtp}</span>
-                    </div>
-                    <div className="game-stat">
-                      <span className="stat-label">Max Win</span>
-                      <span className="stat-value text-gold">{game.maxWin}</span>
-                    </div>
-                  </div>
-
-                  <div className="game-play-btn electric-arc">
-                    <span>Play Now</span>
-                    <span className="play-arrow">→</span>
-                  </div>
-                </Link>
-              </Card3D>
+          <motion.div
+            className="featured-grid"
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true }}
+          >
+            {FEATURED_GAMES.map((game) => (
+              <GameCard
+                key={game.id}
+                title={game.name}
+                description={game.description}
+                image={game.image}
+                icon={game.icon}
+                badge={game.badge}
+                badgeColor={game.badgeColor}
+                rtp={game.rtp}
+                maxWin={game.maxWin}
+                href={game.path}
+              />
             ))}
-          </div>
+          </motion.div>
 
-          <div className="section-cta">
-            <Link to="/games">
-              <button className="btn btn-secondary btn-lg">
-                View All Games
-                <span>→</span>
-              </button>
-            </Link>
-          </div>
+          <Reveal>
+            <div className="section-cta">
+              <Link to="/games">
+                <motion.button
+                  className="btn btn-secondary btn-lg"
+                  whileHover={{ scale: 1.05, borderColor: 'var(--gold)' }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  View All Games
+                  <span>→</span>
+                </motion.button>
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Promotions Banner */}
       <section className="promo-section">
         <div className="container">
-          <div className="promo-banner">
-            <div className="promo-bg">
-              <div className="promo-shine" />
-            </div>
-            <div className="promo-content">
-              <div className="promo-icon">🎁</div>
-              <div className="promo-text">
-                <h3 className="promo-title">Welcome Bonus</h3>
-                <p className="promo-desc">Get 1,000 FREE tokens when you sign up today!</p>
+          <TiltCard glowColor="#FFD700" intensity={8}>
+            <motion.div
+              className="promo-banner"
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+            >
+              <div className="promo-bg">
+                <motion.div
+                  className="promo-shine"
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                />
               </div>
-              <Link to="/login">
-                <button className="btn btn-primary btn-lg promo-btn">
-                  Claim Now
-                </button>
-              </Link>
-            </div>
-          </div>
+              <div className="promo-content">
+                <FloatingElement duration={2} y={10}>
+                  <div className="promo-icon">🎁</div>
+                </FloatingElement>
+                <div className="promo-text">
+                  <h3 className="promo-title">
+                    <GradientText>Welcome Bonus</GradientText>
+                  </h3>
+                  <p className="promo-desc">Get 1,000 FREE tokens when you sign up today!</p>
+                </div>
+                <Link to="/login">
+                  <motion.button
+                    className="btn btn-primary btn-lg promo-btn"
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                  >
+                    Claim Now
+                  </motion.button>
+                </Link>
+              </div>
+            </motion.div>
+          </TiltCard>
         </div>
       </section>
 
       {/* VIP Section */}
       <section className="vip-section">
         <div className="container">
-          <div className="section-header">
-            <div className="section-label">
-              <span className="label-icon">👑</span>
-              Exclusive Rewards
+          <Reveal>
+            <div className="section-header">
+              <div className="section-label">
+                <motion.span
+                  animate={{ scale: [1, 1.2, 1] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
+                  👑
+                </motion.span>
+                Exclusive Rewards
+              </div>
+              <h2 className="section-title">
+                <GradientText>VIP</GradientText> Club Benefits
+              </h2>
+              <p className="section-subtitle">
+                Unlock exclusive perks and rewards as you climb the VIP tiers
+              </p>
             </div>
-            <h2 className="section-title">
-              <span className="text-gradient-gold">VIP</span> Club Benefits
-            </h2>
-            <p className="section-subtitle">
-              Unlock exclusive perks and rewards as you climb the VIP tiers
-            </p>
-          </div>
+          </Reveal>
 
           <div className="vip-tiers">
             {VIP_TIERS.map((tier, index) => (
-              <HolographicCard key={tier.name}>
-                <div
-                  className="vip-tier premium-card-hover"
-                  style={{ animationDelay: `${index * 0.1}s` }}
-                >
-                  <FloatingElement amplitude={6} duration={2.5} delay={index * 0.3}>
-                    <div className="tier-icon" style={{ color: tier.color }}>
-                      {tier.icon}
-                    </div>
-                  </FloatingElement>
-                  <h4 className="tier-name holo-shimmer" style={{ '--base-color': tier.color } as React.CSSProperties}>
-                    {tier.name}
-                  </h4>
-                  <div className="tier-benefits">
-                    <div className="tier-benefit">
-                      <span className="benefit-value">{tier.cashback}</span>
-                      <span className="benefit-label">Cashback</span>
-                    </div>
-                    <div className="tier-benefit">
-                      <span className="benefit-value">{tier.bonus}</span>
-                      <span className="benefit-label">Bonus</span>
-                    </div>
-                  </div>
-                </div>
-              </HolographicCard>
+              <VIPTierCard
+                key={tier.name}
+                name={tier.name}
+                icon={tier.icon}
+                color={tier.color}
+                cashback={tier.cashback}
+                bonus={tier.bonus}
+                index={index}
+              />
             ))}
           </div>
 
-          <div className="section-cta">
-            <Link to="/vip">
-              <button className="btn btn-outline btn-lg">
-                Learn More About VIP
-                <span>→</span>
-              </button>
-            </Link>
-          </div>
+          <Reveal>
+            <div className="section-cta">
+              <Link to="/vip">
+                <motion.button
+                  className="btn btn-outline btn-lg"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  Learn More About VIP
+                  <span>→</span>
+                </motion.button>
+              </Link>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* Features Section */}
       <section className="features-section">
         <div className="container">
-          <div className="section-header">
-            <div className="section-label">
-              <span className="label-icon">✨</span>
-              Why Choose Us
+          <Reveal>
+            <div className="section-header">
+              <div className="section-label">
+                <motion.span
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                >
+                  ✨
+                </motion.span>
+                Why Choose Us
+              </div>
+              <h2 className="section-title">
+                The <GradientText>Premium</GradientText> Experience
+              </h2>
             </div>
-            <h2 className="section-title">
-              The <span className="text-gradient-gold">Premium</span> Experience
-            </h2>
-          </div>
+          </Reveal>
 
           <div className="features-grid">
-            <div className="feature-card animate-fadeInUp">
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">🎮</span>
-              </div>
-              <h3 className="feature-title">Premium Games</h3>
-              <p className="feature-desc">
-                Curated collection of the best casino games with stunning graphics and smooth gameplay
-              </p>
-            </div>
-
-            <div className="feature-card animate-fadeInUp" style={{ animationDelay: '0.1s' }}>
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">⚡</span>
-              </div>
-              <h3 className="feature-title">Instant Payouts</h3>
-              <p className="feature-desc">
-                Win and get your tokens instantly. No waiting, no delays, just pure excitement
-              </p>
-            </div>
-
-            <div className="feature-card animate-fadeInUp" style={{ animationDelay: '0.2s' }}>
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">🔒</span>
-              </div>
-              <h3 className="feature-title">Secure Platform</h3>
-              <p className="feature-desc">
-                Bank-grade security with encrypted transactions and provably fair games
-              </p>
-            </div>
-
-            <div className="feature-card animate-fadeInUp" style={{ animationDelay: '0.3s' }}>
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">🎁</span>
-              </div>
-              <h3 className="feature-title">Daily Rewards</h3>
-              <p className="feature-desc">
-                Claim free tokens every day with our generous daily bonus system
-              </p>
-            </div>
-
-            <div className="feature-card animate-fadeInUp" style={{ animationDelay: '0.4s' }}>
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">📱</span>
-              </div>
-              <h3 className="feature-title">Play Anywhere</h3>
-              <p className="feature-desc">
-                Fully responsive design works perfectly on desktop, tablet, and mobile
-              </p>
-            </div>
-
-            <div className="feature-card animate-fadeInUp" style={{ animationDelay: '0.5s' }}>
-              <div className="feature-icon-wrapper">
-                <span className="feature-icon">🏆</span>
-              </div>
-              <h3 className="feature-title">Leaderboards</h3>
-              <p className="feature-desc">
-                Compete with players worldwide and climb to the top of our leaderboards
-              </p>
-            </div>
+            {FEATURES.map((feature, index) => (
+              <FeatureCard
+                key={feature.title}
+                icon={feature.icon}
+                title={feature.title}
+                description={feature.description}
+                index={index}
+              />
+            ))}
           </div>
         </div>
       </section>
@@ -535,30 +602,38 @@ export function Home() {
       {/* Final CTA */}
       <section className="cta-section">
         <div className="container">
-          <div className="cta-card">
+          <motion.div
+            className="cta-card"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
             <div className="cta-bg">
-              <div className="cta-particles">
-                {[...Array(20)].map((_, i) => (
-                  <div key={i} className="cta-particle" style={{
-                    left: `${Math.random() * 100}%`,
-                    animationDelay: `${Math.random() * 3}s`
-                  }} />
-                ))}
-              </div>
+              <GlowingOrbs count={4} colors={['#FFD700', '#8B5CF6']} />
             </div>
             <div className="cta-content">
-              <h2 className="cta-title">Ready to Win Big?</h2>
+              <motion.h2
+                className="cta-title"
+                animate={{ scale: [1, 1.02, 1] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <GradientText animate>Ready to Win Big?</GradientText>
+              </motion.h2>
               <p className="cta-subtitle">
                 Join thousands of players and start your winning journey today
               </p>
               <Link to="/login">
-                <button className="btn btn-primary btn-xl">
+                <motion.button
+                  className="btn btn-primary btn-xl"
+                  whileHover={{ scale: 1.1, boxShadow: '0 15px 50px rgba(255, 215, 0, 0.6)' }}
+                  whileTap={{ scale: 0.95 }}
+                >
                   <span>🚀</span>
                   Get Started Free
-                </button>
+                </motion.button>
               </Link>
             </div>
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -570,10 +645,10 @@ export function Home() {
         /* Hero Section */
         .hero {
           position: relative;
-          min-height: 90vh;
+          min-height: 100vh;
           display: flex;
           align-items: center;
-          padding: 100px 0 80px;
+          padding: 120px 0 100px;
           overflow: hidden;
         }
 
@@ -586,92 +661,20 @@ export function Home() {
           z-index: 0;
         }
 
-        .hero-particles {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
-
-        .hero-particles .particle {
-          position: absolute;
-          width: 4px;
-          height: 4px;
-          background: var(--gold);
-          border-radius: 50%;
-          animation: float-particle linear infinite;
-          opacity: 0.3;
-        }
-
-        @keyframes float-particle {
-          0% {
-            transform: translateY(100vh) rotate(0deg);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.3;
-          }
-          90% {
-            opacity: 0.3;
-          }
-          100% {
-            transform: translateY(-100px) rotate(360deg);
-            opacity: 0;
-          }
-        }
-
-        .hero-glow {
-          position: absolute;
-          border-radius: 50%;
-          filter: blur(100px);
-          opacity: 0.4;
-        }
-
-        .hero-glow-1 {
-          width: 600px;
-          height: 600px;
-          background: var(--gold);
-          top: -200px;
-          right: -100px;
-          animation: glow-pulse 8s ease-in-out infinite;
-        }
-
-        .hero-glow-2 {
-          width: 400px;
-          height: 400px;
-          background: var(--accent);
-          bottom: 0;
-          left: -100px;
-          animation: glow-pulse 10s ease-in-out infinite reverse;
-        }
-
-        .hero-glow-3 {
-          width: 300px;
-          height: 300px;
-          background: var(--primary);
-          top: 50%;
-          left: 50%;
-          animation: glow-pulse 6s ease-in-out infinite;
-        }
-
-        @keyframes glow-pulse {
-          0%, 100% { transform: scale(1); opacity: 0.3; }
-          50% { transform: scale(1.2); opacity: 0.5; }
-        }
-
         .hero-content {
           position: relative;
           z-index: 1;
           text-align: center;
-          max-width: 900px;
+          max-width: 1000px;
           margin: 0 auto;
         }
 
         .hero-badge {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
-          padding: 10px 24px;
-          background: var(--bg-glass);
+          gap: 10px;
+          padding: 12px 28px;
+          background: rgba(255, 215, 0, 0.1);
           border: 1px solid var(--border-gold);
           border-radius: var(--radius-full);
           font-size: 14px;
@@ -681,40 +684,38 @@ export function Home() {
           backdrop-filter: blur(10px);
         }
 
-        .badge-icon {
-          animation: bounce 1s ease-in-out infinite;
-        }
-
         .hero-title {
           font-family: 'Cinzel', serif;
-          font-size: 72px;
+          font-size: 80px;
           font-weight: 900;
           line-height: 1.1;
-          margin-bottom: 24px;
+          margin: 32px 0;
           text-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
         }
 
         .hero-title-sub {
-          font-size: 56px;
+          font-size: 64px;
           color: var(--text-secondary);
+          display: block;
+          margin-top: 8px;
         }
 
         .hero-subtitle {
           font-size: 20px;
           color: var(--text-secondary);
-          max-width: 600px;
-          margin: 0 auto 40px;
-          line-height: 1.7;
+          max-width: 650px;
+          margin: 0 auto 48px;
+          line-height: 1.8;
         }
 
         .hero-stats {
-          display: flex;
+          display: inline-flex;
           align-items: center;
           justify-content: center;
-          gap: 40px;
+          gap: 48px;
           margin-bottom: 48px;
-          padding: 24px 48px;
-          background: var(--bg-glass);
+          padding: 28px 56px;
+          background: rgba(30, 41, 59, 0.7);
           border: 1px solid var(--border-light);
           border-radius: var(--radius-xl);
           backdrop-filter: blur(20px);
@@ -726,86 +727,125 @@ export function Home() {
 
         .hero-stat-value {
           font-family: 'Cinzel', serif;
-          font-size: 32px;
+          font-size: 36px;
           font-weight: 800;
-          color: var(--gold);
-          text-shadow: 0 0 20px var(--gold-glow);
         }
 
         .hero-stat-label {
           font-size: 13px;
           color: var(--text-muted);
           text-transform: uppercase;
-          letter-spacing: 1px;
-          margin-top: 4px;
+          letter-spacing: 1.5px;
+          margin-top: 6px;
         }
 
         .hero-stat-divider {
           width: 1px;
-          height: 50px;
-          background: var(--border-light);
+          height: 60px;
+          background: linear-gradient(180deg, transparent, var(--border-light), transparent);
         }
 
         .hero-cta {
           display: flex;
           justify-content: center;
-          gap: 16px;
+          gap: 20px;
           margin-bottom: 48px;
-        }
-
-        .hero-btn {
-          animation: glow 2s ease-in-out infinite;
         }
 
         .hero-trust {
           display: flex;
           justify-content: center;
-          gap: 32px;
+          gap: 40px;
         }
 
         .trust-item {
           display: flex;
           align-items: center;
-          gap: 8px;
-          font-size: 14px;
+          gap: 10px;
+          font-size: 15px;
           color: var(--text-secondary);
         }
 
         .trust-icon {
-          font-size: 18px;
+          font-size: 20px;
+        }
+
+        .scroll-indicator {
+          position: absolute;
+          bottom: 40px;
+          left: 50%;
+          transform: translateX(-50%);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 8px;
+          color: var(--text-muted);
+          font-size: 13px;
+        }
+
+        .scroll-arrow {
+          font-size: 20px;
+          color: var(--gold);
+        }
+
+        /* Floating Coins */
+        .floating-coins {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          overflow: hidden;
+        }
+
+        /* Neon Grid */
+        .neon-grid {
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-image:
+            linear-gradient(rgba(255, 215, 0, 0.02) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 215, 0, 0.02) 1px, transparent 1px);
+          background-size: 60px 60px;
+          opacity: 0.5;
         }
 
         /* Live Wins Section */
         .live-wins-section {
-          padding: 24px 0;
+          padding: 20px 0;
           background: var(--bg-dark);
           border-top: 1px solid var(--border-subtle);
           border-bottom: 1px solid var(--border-subtle);
+          overflow: hidden;
         }
 
         .live-wins-header {
           display: flex;
           align-items: center;
+          padding: 0 24px;
           margin-bottom: 16px;
         }
 
         .live-indicator {
           display: flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           font-size: 12px;
           font-weight: 700;
           color: var(--red);
           text-transform: uppercase;
-          letter-spacing: 1px;
+          letter-spacing: 1.5px;
         }
 
         .live-dot {
-          width: 8px;
-          height: 8px;
+          width: 10px;
+          height: 10px;
           background: var(--red);
           border-radius: 50%;
-          animation: pulse 1s ease-in-out infinite;
+          box-shadow: 0 0 10px var(--red);
         }
 
         .live-wins-ticker {
@@ -814,27 +854,20 @@ export function Home() {
 
         .ticker-track {
           display: flex;
-          gap: 24px;
-          overflow-x: auto;
-          padding: 8px 0;
-          scrollbar-width: none;
-          -ms-overflow-style: none;
-        }
-
-        .ticker-track::-webkit-scrollbar {
-          display: none;
+          gap: 16px;
+          width: fit-content;
         }
 
         .win-item {
           display: flex;
           align-items: center;
-          gap: 8px;
-          padding: 12px 20px;
+          gap: 10px;
+          padding: 14px 24px;
           background: var(--bg-glass);
           border: 1px solid var(--border-subtle);
           border-radius: var(--radius-full);
           white-space: nowrap;
-          flex-shrink: 0;
+          transition: all 0.3s ease;
         }
 
         .win-player {
@@ -863,13 +896,13 @@ export function Home() {
         /* Section Styles */
         .section-header {
           text-align: center;
-          margin-bottom: 48px;
+          margin-bottom: 56px;
         }
 
         .section-label {
           display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 10px;
           font-size: 13px;
           font-weight: 700;
           color: var(--gold);
@@ -878,13 +911,9 @@ export function Home() {
           margin-bottom: 16px;
         }
 
-        .label-icon {
-          font-size: 16px;
-        }
-
         .section-title {
           font-family: 'Cinzel', serif;
-          font-size: 42px;
+          font-size: 48px;
           font-weight: 800;
           margin-bottom: 16px;
         }
@@ -898,207 +927,23 @@ export function Home() {
 
         .section-cta {
           text-align: center;
-          margin-top: 48px;
+          margin-top: 56px;
         }
 
         /* Featured Games */
         .featured-section {
-          padding: 100px 0;
+          padding: 120px 0;
         }
 
         .featured-grid {
           display: grid;
           grid-template-columns: repeat(3, 1fr);
-          gap: 24px;
-        }
-
-        .game-card {
-          position: relative;
-          background: var(--bg-glass);
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-xl);
-          padding: 28px;
-          text-decoration: none;
-          transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-          overflow: hidden;
-          animation: fadeInUp 0.6s ease backwards;
-        }
-
-        .game-card::before {
-          content: '';
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 3px;
-          background: var(--gradient-gold);
-          transform: scaleX(0);
-          transition: transform 0.3s ease;
-        }
-
-        .game-card:hover {
-          transform: translateY(-8px);
-          border-color: var(--border-gold);
-          box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4), var(--shadow-gold);
-        }
-
-        .game-card:hover::before {
-          transform: scaleX(1);
-        }
-
-        .game-card-featured {
-          border-color: var(--border-gold);
-          box-shadow: var(--shadow-gold);
-        }
-
-        .game-badge {
-          position: absolute;
-          top: 16px;
-          right: 16px;
-          padding: 6px 14px;
-          font-size: 10px;
-          font-weight: 800;
-          text-transform: uppercase;
-          letter-spacing: 1px;
-          border-radius: var(--radius-full);
-        }
-
-        .badge-gold {
-          background: var(--gradient-gold);
-          color: var(--bg-deepest);
-        }
-
-        .badge-red {
-          background: linear-gradient(135deg, var(--red), var(--red-dark));
-          color: white;
-        }
-
-        .badge-purple {
-          background: linear-gradient(135deg, var(--accent), var(--accent-dark));
-          color: white;
-        }
-
-        .badge-blue {
-          background: linear-gradient(135deg, var(--blue), var(--blue-dark));
-          color: white;
-        }
-
-        .badge-green {
-          background: linear-gradient(135deg, var(--green), var(--green-dark));
-          color: var(--bg-deepest);
-        }
-
-        .badge-cyan {
-          background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-          color: var(--bg-deepest);
-        }
-
-        .game-icon-wrapper {
-          position: relative;
-          width: 80px;
-          height: 80px;
-          margin-bottom: 20px;
-        }
-
-        .game-icon {
-          width: 80px;
-          height: 80px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          font-size: 48px;
-          background: var(--bg-dark);
-          border-radius: var(--radius-lg);
-          border: 1px solid var(--border-light);
-          position: relative;
-          z-index: 1;
-        }
-
-        .game-icon-glow {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 100px;
-          height: 100px;
-          background: var(--gold);
-          border-radius: 50%;
-          filter: blur(40px);
-          opacity: 0;
-          transition: opacity 0.3s ease;
-        }
-
-        .game-card:hover .game-icon-glow {
-          opacity: 0.3;
-        }
-
-        .game-info {
-          margin-bottom: 20px;
-        }
-
-        .game-name {
-          font-family: 'Cinzel', serif;
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--text-primary);
-          margin-bottom: 8px;
-        }
-
-        .game-desc {
-          font-size: 14px;
-          color: var(--text-secondary);
-          line-height: 1.5;
-        }
-
-        .game-stats {
-          display: flex;
-          gap: 24px;
-          padding: 16px 0;
-          border-top: 1px solid var(--border-subtle);
-          border-bottom: 1px solid var(--border-subtle);
-          margin-bottom: 20px;
-        }
-
-        .game-stat {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .stat-label {
-          font-size: 11px;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-
-        .stat-value {
-          font-size: 16px;
-          font-weight: 700;
-          color: var(--text-primary);
-        }
-
-        .game-play-btn {
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-          padding: 12px 0;
-          font-weight: 600;
-          color: var(--gold);
-        }
-
-        .play-arrow {
-          transform: translateX(0);
-          transition: transform 0.3s ease;
-        }
-
-        .game-card:hover .play-arrow {
-          transform: translateX(5px);
+          gap: 28px;
         }
 
         /* Promo Banner */
         .promo-section {
-          padding: 40px 0;
+          padding: 60px 0;
         }
 
         .promo-banner {
@@ -1106,7 +951,7 @@ export function Home() {
           background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
           border: 2px solid var(--border-gold);
           border-radius: var(--radius-xl);
-          padding: 40px;
+          padding: 48px;
           overflow: hidden;
         }
 
@@ -1130,25 +975,18 @@ export function Home() {
             rgba(255, 215, 0, 0.1) 50%,
             transparent 60%
           );
-          animation: shine 3s linear infinite;
-        }
-
-        @keyframes shine {
-          from { transform: translateX(-50%) translateY(-50%) rotate(0deg); }
-          to { transform: translateX(-50%) translateY(-50%) rotate(360deg); }
         }
 
         .promo-content {
           position: relative;
           display: flex;
           align-items: center;
-          gap: 24px;
+          gap: 32px;
           z-index: 1;
         }
 
         .promo-icon {
-          font-size: 64px;
-          animation: bounce 2s ease-in-out infinite;
+          font-size: 72px;
         }
 
         .promo-text {
@@ -1157,24 +995,19 @@ export function Home() {
 
         .promo-title {
           font-family: 'Cinzel', serif;
-          font-size: 28px;
+          font-size: 32px;
           font-weight: 700;
-          color: var(--gold);
           margin-bottom: 8px;
         }
 
         .promo-desc {
-          font-size: 16px;
+          font-size: 18px;
           color: var(--text-secondary);
-        }
-
-        .promo-btn {
-          flex-shrink: 0;
         }
 
         /* VIP Section */
         .vip-section {
-          padding: 100px 0;
+          padding: 120px 0;
           background: var(--bg-dark);
         }
 
@@ -1185,64 +1018,9 @@ export function Home() {
           flex-wrap: wrap;
         }
 
-        .vip-tier {
-          background: var(--bg-glass);
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-xl);
-          padding: 32px;
-          text-align: center;
-          min-width: 180px;
-          transition: all 0.3s ease;
-          animation: fadeInUp 0.6s ease backwards;
-        }
-
-        .vip-tier:hover {
-          transform: translateY(-8px);
-          border-color: var(--border-gold);
-          box-shadow: var(--shadow-gold);
-        }
-
-        .tier-icon {
-          font-size: 48px;
-          margin-bottom: 16px;
-          filter: drop-shadow(0 0 10px currentColor);
-        }
-
-        .tier-name {
-          font-family: 'Cinzel', serif;
-          font-size: 18px;
-          font-weight: 700;
-          margin-bottom: 20px;
-        }
-
-        .tier-benefits {
-          display: flex;
-          flex-direction: column;
-          gap: 12px;
-        }
-
-        .tier-benefit {
-          display: flex;
-          flex-direction: column;
-          gap: 4px;
-        }
-
-        .benefit-value {
-          font-size: 20px;
-          font-weight: 700;
-          color: var(--text-primary);
-        }
-
-        .benefit-label {
-          font-size: 12px;
-          color: var(--text-muted);
-          text-transform: uppercase;
-          letter-spacing: 1px;
-        }
-
         /* Features Section */
         .features-section {
-          padding: 100px 0;
+          padding: 120px 0;
         }
 
         .features-grid {
@@ -1251,65 +1029,20 @@ export function Home() {
           gap: 32px;
         }
 
-        .feature-card {
-          background: var(--bg-glass);
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-xl);
-          padding: 40px 32px;
-          text-align: center;
-          transition: all 0.3s ease;
-        }
-
-        .feature-card:hover {
-          transform: translateY(-8px);
-          border-color: var(--border-gold);
-          box-shadow: var(--shadow-gold);
-        }
-
-        .feature-icon-wrapper {
-          width: 80px;
-          height: 80px;
-          margin: 0 auto 24px;
-          background: linear-gradient(135deg, var(--bg-card), var(--bg-dark));
-          border: 1px solid var(--border-light);
-          border-radius: var(--radius-lg);
-          display: flex;
-          align-items: center;
-          justify-content: center;
-        }
-
-        .feature-icon {
-          font-size: 36px;
-        }
-
-        .feature-title {
-          font-family: 'Cinzel', serif;
-          font-size: 20px;
-          font-weight: 700;
-          margin-bottom: 12px;
-          color: var(--text-primary);
-        }
-
-        .feature-desc {
-          font-size: 14px;
-          color: var(--text-secondary);
-          line-height: 1.6;
-        }
-
         /* CTA Section */
         .cta-section {
-          padding: 80px 0;
+          padding: 100px 0;
         }
 
         .cta-card {
           position: relative;
           background: linear-gradient(135deg, var(--bg-card), var(--bg-dark));
-          border: 1px solid var(--border-gold);
+          border: 2px solid var(--border-gold);
           border-radius: var(--radius-xl);
-          padding: 80px;
+          padding: 100px;
           text-align: center;
           overflow: hidden;
-          box-shadow: var(--shadow-gold);
+          box-shadow: 0 0 60px rgba(255, 215, 0, 0.2);
         }
 
         .cta-bg {
@@ -1320,22 +1053,6 @@ export function Home() {
           bottom: 0;
         }
 
-        .cta-particles {
-          position: absolute;
-          width: 100%;
-          height: 100%;
-        }
-
-        .cta-particle {
-          position: absolute;
-          width: 6px;
-          height: 6px;
-          background: var(--gold);
-          border-radius: 50%;
-          animation: float-particle 10s linear infinite;
-          opacity: 0.3;
-        }
-
         .cta-content {
           position: relative;
           z-index: 1;
@@ -1343,192 +1060,15 @@ export function Home() {
 
         .cta-title {
           font-family: 'Cinzel', serif;
-          font-size: 48px;
+          font-size: 56px;
           font-weight: 800;
-          margin-bottom: 16px;
-          background: var(--gradient-gold-shine);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
+          margin-bottom: 20px;
         }
 
         .cta-subtitle {
-          font-size: 18px;
-          color: var(--text-secondary);
-          margin-bottom: 32px;
-        }
-
-        /* Progressive Jackpot Counter */
-        .jackpot-counter {
-          position: relative;
-          margin-bottom: 32px;
-          padding: 24px 48px;
-          background: linear-gradient(135deg, rgba(255, 215, 0, 0.15), rgba(255, 165, 0, 0.1));
-          border: 2px solid var(--border-gold);
-          border-radius: var(--radius-xl);
-          display: inline-block;
-          overflow: hidden;
-          animation: jackpot-pulse 3s ease-in-out infinite;
-        }
-
-        .jackpot-counter::before {
-          content: '';
-          position: absolute;
-          top: -2px;
-          left: -2px;
-          right: -2px;
-          bottom: -2px;
-          background: linear-gradient(45deg, #FFD700, #FF6347, #FFD700, #00D4AA, #FFD700);
-          background-size: 400% 400%;
-          z-index: -1;
-          border-radius: var(--radius-xl);
-          animation: gradient-rotate 4s linear infinite;
-          filter: blur(3px);
-        }
-
-        @keyframes gradient-rotate {
-          0% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-          100% { background-position: 0% 50%; }
-        }
-
-        @keyframes jackpot-pulse {
-          0%, 100% { transform: scale(1); box-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
-          50% { transform: scale(1.02); box-shadow: 0 0 60px rgba(255, 215, 0, 0.5); }
-        }
-
-        .jackpot-counter.incrementing {
-          animation: jackpot-increment 0.3s ease-out;
-        }
-
-        @keyframes jackpot-increment {
-          0% { transform: scale(1); }
-          50% { transform: scale(1.05); }
-          100% { transform: scale(1); }
-        }
-
-        .jackpot-label {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          gap: 8px;
-          font-size: 12px;
-          font-weight: 800;
-          color: var(--gold);
-          text-transform: uppercase;
-          letter-spacing: 3px;
-          margin-bottom: 8px;
-        }
-
-        .jackpot-icon {
           font-size: 20px;
-          animation: slot-spin 2s ease-in-out infinite;
-        }
-
-        @keyframes slot-spin {
-          0%, 100% { transform: rotate(0deg); }
-          10% { transform: rotate(-10deg); }
-          20% { transform: rotate(10deg); }
-          30% { transform: rotate(0deg); }
-        }
-
-        .jackpot-amount {
-          display: flex;
-          align-items: baseline;
-          justify-content: center;
-          gap: 4px;
-        }
-
-        .jackpot-amount .currency {
-          font-family: 'Cinzel', serif;
-          font-size: 32px;
-          font-weight: 700;
-          color: var(--gold);
-        }
-
-        .jackpot-amount .amount {
-          font-family: 'Cinzel', serif;
-          font-size: 48px;
-          font-weight: 900;
-          background: linear-gradient(135deg, #FFE55C 0%, #FFD700 50%, #FFA500 100%);
-          -webkit-background-clip: text;
-          -webkit-text-fill-color: transparent;
-          background-clip: text;
-          text-shadow: none;
-          filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.5));
-        }
-
-        .jackpot-glow {
-          position: absolute;
-          top: 50%;
-          left: 50%;
-          transform: translate(-50%, -50%);
-          width: 150%;
-          height: 150%;
-          background: radial-gradient(ellipse, rgba(255, 215, 0, 0.2) 0%, transparent 70%);
-          pointer-events: none;
-          animation: glow-breathe 4s ease-in-out infinite;
-        }
-
-        @keyframes glow-breathe {
-          0%, 100% { opacity: 0.5; transform: translate(-50%, -50%) scale(1); }
-          50% { opacity: 1; transform: translate(-50%, -50%) scale(1.2); }
-        }
-
-        /* Floating Coins */
-        .floating-coins {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          pointer-events: none;
-          overflow: hidden;
-        }
-
-        .floating-coin {
-          position: absolute;
-          bottom: -50px;
-          animation: coin-float linear infinite;
-          opacity: 0.6;
-          filter: drop-shadow(0 0 10px rgba(255, 215, 0, 0.5));
-        }
-
-        @keyframes coin-float {
-          0% {
-            transform: translateY(0) rotate(0deg) scale(1);
-            opacity: 0;
-          }
-          10% {
-            opacity: 0.6;
-          }
-          90% {
-            opacity: 0.6;
-          }
-          100% {
-            transform: translateY(-120vh) rotate(720deg) scale(0.8);
-            opacity: 0;
-          }
-        }
-
-        /* Neon Grid Background */
-        .neon-grid {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          background-image:
-            linear-gradient(rgba(255, 215, 0, 0.03) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 215, 0, 0.03) 1px, transparent 1px);
-          background-size: 50px 50px;
-          animation: grid-scroll 20s linear infinite;
-          opacity: 0.5;
-        }
-
-        @keyframes grid-scroll {
-          0% { transform: perspective(500px) rotateX(60deg) translateY(0); }
-          100% { transform: perspective(500px) rotateX(60deg) translateY(50px); }
+          color: var(--text-secondary);
+          margin-bottom: 40px;
         }
 
         /* Responsive */
@@ -1540,12 +1080,20 @@ export function Home() {
           .features-grid {
             grid-template-columns: repeat(2, 1fr);
           }
+
+          .hero-title {
+            font-size: 60px;
+          }
+
+          .hero-title-sub {
+            font-size: 48px;
+          }
         }
 
         @media (max-width: 768px) {
           .hero {
             min-height: auto;
-            padding: 60px 0;
+            padding: 80px 0 60px;
           }
 
           .hero-title {
@@ -1563,16 +1111,22 @@ export function Home() {
           .hero-stats {
             flex-direction: column;
             gap: 24px;
-            padding: 24px;
+            padding: 28px;
           }
 
           .hero-stat-divider {
-            width: 50px;
+            width: 60px;
             height: 1px;
           }
 
           .hero-cta {
             flex-direction: column;
+            gap: 16px;
+          }
+
+          .hero-trust {
+            flex-direction: column;
+            gap: 16px;
           }
 
           .featured-grid,
@@ -1585,11 +1139,6 @@ export function Home() {
             align-items: center;
           }
 
-          .vip-tier {
-            width: 100%;
-            max-width: 300px;
-          }
-
           .promo-content {
             flex-direction: column;
             text-align: center;
@@ -1600,11 +1149,15 @@ export function Home() {
           }
 
           .cta-title {
-            font-size: 32px;
+            font-size: 36px;
           }
 
           .cta-card {
-            padding: 48px 24px;
+            padding: 60px 24px;
+          }
+
+          .scroll-indicator {
+            display: none;
           }
         }
       `}</style>

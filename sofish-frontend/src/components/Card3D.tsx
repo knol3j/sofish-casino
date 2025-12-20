@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, ReactNode } from 'react'
+import { useState, useRef, ReactNode } from 'react'
 
 interface Card3DProps {
   children: ReactNode

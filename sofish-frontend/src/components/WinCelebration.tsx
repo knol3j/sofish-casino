@@ -75,7 +75,7 @@ export function WinCelebration({ show, amount = 0, type = 'normal', onComplete }
     createParticles(particleCounts[type])
 
     // Continue adding particles for bigger wins
-    const intervals: NodeJS.Timeout[] = []
+    const intervals: ReturnType<typeof setTimeout>[] = []
     if (type !== 'normal') {
       for (let i = 0; i < (type === 'jackpot' ? 5 : type === 'mega' ? 3 : 2); i++) {
         intervals.push(setTimeout(() => createParticles(particleCounts[type] / 2), (i + 1) * 500))

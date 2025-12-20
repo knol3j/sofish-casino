@@ -26,7 +26,7 @@ interface SlotMachine3DProps {
 export function SlotMachine3D({ onSpin, betAmount = 10, disabled = false }: SlotMachine3DProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [isSpinning, setIsSpinning] = useState(false)
-  const [result, setResult] = useState<number[]>([0, 0, 0])
+  const [, setResult] = useState<number[]>([0, 0, 0])
   const animationRef = useRef<number>()
   const reelPositionsRef = useRef([0, 0, 0])
   const reelVelocitiesRef = useRef([0, 0, 0])
@@ -231,8 +231,8 @@ export function SlotMachine3D({ onSpin, betAmount = 10, disabled = false }: Slot
 
             if (elapsed > stopTime) {
               // Slow down with elastic easing
-              const targetPos = targetPositionsRef.current[i]
-              const diff = targetPos - (reelPositionsRef.current[i] % (SYMBOLS.length * SYMBOL_SIZE))
+              const _targetPos = targetPositionsRef.current[i]
+              void _targetPos // Mark as intentionally unused
 
               if (Math.abs(reelVelocitiesRef.current[i]) > 0.5) {
                 reelVelocitiesRef.current[i] *= 0.95

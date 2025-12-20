@@ -5,7 +5,7 @@ import { CanvasConfetti } from '../components/CanvasConfetti'
 function TreasureChest({ isOpen, onAnimationComplete }: { isOpen: boolean; onAnimationComplete?: () => void }) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number>()
-  const [particles, setParticles] = useState<Array<{
+  const [particles] = useState<Array<{
     x: number; y: number; vx: number; vy: number;
     rotation: number; type: string; size: number; opacity: number
   }>>([])
@@ -174,7 +174,6 @@ function TreasureChest({ isOpen, onAnimationComplete }: { isOpen: boolean; onAni
       ctx.restore()
 
       // Animate lid
-      const lidSpeed = 2
       if (Math.abs(lidAngle - targetLidAngle) > 0.5) {
         lidAngle += (targetLidAngle - lidAngle) * 0.08
       }
@@ -226,7 +225,7 @@ export function DailyBonus() {
   const [claimed, setClaimed] = useState(false)
   const [isOpening, setIsOpening] = useState(false)
   const [showConfetti, setShowConfetti] = useState(false)
-  const [claimAmount, setClaimAmount] = useState(250)
+  const [claimAmount] = useState(250)
   const [countingAmount, setCountingAmount] = useState(0)
 
   const dailyRewards = [

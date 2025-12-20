@@ -1,5 +1,7 @@
 import { useState, useRef } from 'react'
+import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
+import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
 
 const ROULETTE_NUMBERS = [
   { number: 0, color: 'green' },
@@ -133,17 +135,50 @@ export function RouletteGame() {
   }
 
   return (
-    <div className="roulette-game-page">
+    <motion.div
+      className="roulette-game-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Background Effects */}
+      <div className="ambient-bg">
+        <GlowingOrbs count={4} colors={['#00D68F', '#FF4757', '#FFD700', '#000000']} />
+      </div>
+
       <div className="container">
-        <div className="game-header text-center">
-          <h1 className="game-title gold-text neon">🎰 ROULETTE 🎰</h1>
-          <div className="balance-display">
+        <motion.div
+          className="game-header text-center"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.h1
+            className="game-title gold-text neon"
+            animate={spinning ? { scale: [1, 1.02, 1] } : {}}
+            transition={{ duration: 0.5, repeat: spinning ? Infinity : 0 }}
+          >
+            <FloatingElement duration={3} y={5}>
+              <span>🎰</span>
+            </FloatingElement>
+            {' '}
+            <GradientText gradient="linear-gradient(135deg, #00D68F, #FFD700)">ROULETTE</GradientText>
+            {' '}
+            <FloatingElement duration={3} y={5} delay={0.5}>
+              <span>🎰</span>
+            </FloatingElement>
+          </motion.h1>
+          <motion.div
+            className="balance-display"
+            whileHover={{ scale: 1.05 }}
+            animate={winAmount > 0 ? { scale: [1, 1.1, 1] } : {}}
+          >
             <div className="balance-label">YOUR BALANCE</div>
             <div className="balance-amount gold-text">
               {balanceData?.balance?.toLocaleString() || 0} 💰
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <div className="roulette-container">
           {/* Wheel */}
@@ -667,7 +702,17 @@ export function RouletteGame() {
             flex-direction: column;
           }
         }
+
+        .ambient-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
       `}</style>
-    </div>
+    </motion.div>
   )
 }
