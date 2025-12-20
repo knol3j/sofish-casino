@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, Link } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
+import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
 
 interface Fish {
   id: number
@@ -296,19 +298,51 @@ export function FishingGame() {
   const winAmount = Math.floor(score * betAmount / 10)
 
   return (
-    <div className="fishing-game-page">
+    <motion.div
+      className="fishing-game-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Background Effects */}
+      <div className="ambient-bg">
+        <GlowingOrbs count={4} colors={[currentMode.colors.primary, currentMode.colors.secondary, currentMode.colors.accent, '#1E3A8A']} />
+      </div>
+
       <div className="container">
-        <div className="game-header text-center">
-          <h1 className="game-title neon mode-title" style={{ color: currentMode.colors.primary }}>
-            {currentMode.name.toUpperCase()}
-          </h1>
-          <div className="balance-display">
+        <motion.div
+          className="game-header text-center"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Link to="/fishing-hub" className="back-link" style={{ marginBottom: 16, display: 'inline-block' }}>
+            ← Back to Fishing Hub
+          </Link>
+          <motion.h1
+            className="game-title neon mode-title"
+            style={{ color: currentMode.colors.primary }}
+            animate={isPlaying ? { scale: [1, 1.02, 1] } : {}}
+            transition={{ duration: 1, repeat: isPlaying ? Infinity : 0 }}
+          >
+            <GradientText gradient={`linear-gradient(135deg, ${currentMode.colors.primary}, ${currentMode.colors.accent})`}>
+              {currentMode.name.toUpperCase()}
+            </GradientText>
+          </motion.h1>
+          <motion.div
+            className="balance-display"
+            whileHover={{ scale: 1.05 }}
+            animate={showResult && score > 0 ? { scale: [1, 1.1, 1] } : {}}
+          >
             <div className="balance-label">YOUR BALANCE</div>
             <div className="balance-amount gold-text">
-              {balanceData?.balance?.toLocaleString() || 0} 💰
+              <FloatingElement duration={2} y={3}>
+                <span>💰</span>
+              </FloatingElement>
+              {' '}{balanceData?.balance?.toLocaleString() || 0}
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         {!isPlaying && !showResult && (
           <div className="game-setup card">
@@ -717,7 +751,27 @@ export function FishingGame() {
             flex-direction: column;
           }
         }
+
+        .ambient-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
+
+        .back-link {
+          color: var(--text-secondary);
+          text-decoration: none;
+          transition: color 0.2s ease;
+        }
+
+        .back-link:hover {
+          color: var(--gold);
+        }
       `}</style>
-    </div>
+    </motion.div>
   )
 }

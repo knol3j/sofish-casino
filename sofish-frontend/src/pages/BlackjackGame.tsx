@@ -1,5 +1,7 @@
 import { useState } from 'react'
+import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
+import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
 
 type Card = {
   suit: '♠️' | '♥️' | '♦️' | '♣️'
@@ -145,17 +147,46 @@ export function BlackjackGame() {
   }
 
   return (
-    <div className="blackjack-game-page">
+    <motion.div
+      className="blackjack-game-page"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      {/* Background Effects */}
+      <div className="ambient-bg">
+        <GlowingOrbs count={4} colors={['#00D68F', '#FFD700', '#1E293B', '#8B5CF6']} />
+      </div>
+
       <div className="container">
-        <div className="game-header text-center">
-          <h1 className="game-title gold-text neon">🃏 BLACKJACK 21 🃏</h1>
-          <div className="balance-display">
+        <motion.div
+          className="game-header text-center"
+          initial={{ opacity: 0, y: -30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <motion.h1 className="game-title gold-text neon">
+            <FloatingElement duration={3} y={5}>
+              <span>🃏</span>
+            </FloatingElement>
+            {' '}
+            <GradientText gradient="linear-gradient(135deg, #00D68F, #FFD700)">BLACKJACK 21</GradientText>
+            {' '}
+            <FloatingElement duration={3} y={5} delay={0.5}>
+              <span>🃏</span>
+            </FloatingElement>
+          </motion.h1>
+          <motion.div
+            className="balance-display"
+            whileHover={{ scale: 1.05 }}
+            animate={winAmount > 0 ? { scale: [1, 1.1, 1] } : {}}
+          >
             <div className="balance-label">YOUR BALANCE</div>
             <div className="balance-amount gold-text">
               {balanceData?.balance?.toLocaleString() || 0} 💰
             </div>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
 
         <div className="blackjack-container">
           {gameState === 'betting' && (
@@ -661,7 +692,17 @@ export function BlackjackGame() {
             flex-direction: column;
           }
         }
+
+        .ambient-bg {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          pointer-events: none;
+          z-index: 0;
+        }
       `}</style>
-    </div>
+    </motion.div>
   )
 }
