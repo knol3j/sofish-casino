@@ -20,6 +20,167 @@ const providerGames = [
 
 const slotGames = [
   {
+    id: 'olympus',
+    name: 'Olympus Glory',
+    icon: '⚡',
+    theme: 'mythology',
+    description: 'Godly 6-reel Megaways power from the heavens',
+    minBet: 40,
+    maxWin: '8000x',
+    jackpot: '2,500,000',
+    color: '#FFD700',
+    hot: true
+  },
+  {
+    id: 'vampire',
+    name: "Vampire's Kiss",
+    icon: '🦇',
+    theme: 'horror',
+    description: 'Immortal riches wait in this 5-reel gothic castle',
+    minBet: 20,
+    maxWin: '1200x',
+    jackpot: '500,000',
+    color: '#FF0000'
+  },
+  {
+    id: 'leprechaun',
+    name: "Leprechaun's Luck",
+    icon: '☘️',
+    theme: 'luck',
+    description: 'Follow the 5-reel rainbow to giant jackpots',
+    minBet: 10,
+    maxWin: '800x',
+    jackpot: '300,000',
+    color: '#00FF00',
+    popular: true
+  },
+  {
+    id: 'viking',
+    name: 'Viking Vault',
+    icon: '🪓',
+    theme: 'norse',
+    description: 'Norse hold and spin action on 4 frozen reels',
+    minBet: 25,
+    maxWin: '500x',
+    jackpot: '400,000',
+    color: '#4682B4'
+  },
+  {
+    id: 'safari',
+    name: 'Safari Strike',
+    icon: '🦁',
+    theme: 'savanna',
+    description: 'Wild animal payouts across the 5-reel savanna',
+    minBet: 15,
+    maxWin: '1000x',
+    jackpot: '250,000',
+    color: '#FFA500'
+  },
+  {
+    id: 'mafia',
+    name: 'Mafia Mayhem',
+    icon: '🕴️',
+    theme: 'gangster',
+    description: '1920s syndicate megaways on 6 explosive reels',
+    minBet: 50,
+    maxWin: '7000x',
+    jackpot: '2,000,000',
+    color: '#B22222',
+    new: true
+  },
+  {
+    id: 'forest',
+    name: 'Mystic Forest',
+    icon: '🧚',
+    theme: 'fantasy',
+    description: 'Enchanting 5-reel journey through magical woods',
+    minBet: 15,
+    maxWin: '800x',
+    jackpot: '200,000',
+    color: '#32CD32'
+  },
+  {
+    id: 'ninja',
+    name: 'Neon Ninja',
+    icon: '🥷',
+    theme: 'action',
+    description: 'High-speed 6-reel cyberpunk martial arts action',
+    minBet: 30,
+    maxWin: '6000x',
+    jackpot: '1,500,000',
+    color: '#FF3131',
+    hot: true
+  },
+  {
+    id: 'pirate',
+    name: "Pirate's Bounty",
+    icon: '🏴‍☠️',
+    theme: 'ocean',
+    description: 'Search for buried treasure across 5 perilous reels',
+    minBet: 25,
+    maxWin: '1000x',
+    jackpot: '400,000',
+    color: '#000080'
+  },
+  {
+    id: 'galactic',
+    name: 'Galactic Gems',
+    icon: '💎',
+    theme: 'space',
+    description: 'Deep space 4-reel adventure for cosmic cash',
+    minBet: 40,
+    maxWin: '500x',
+    jackpot: '300,000',
+    color: '#FF00FF'
+  },
+  {
+    id: 'pharaoh',
+    name: "Pharaoh's Tomb",
+    icon: '🛕',
+    theme: 'egypt',
+    description: 'Ancient Egyptian riches await across 5 dynamic reels',
+    minBet: 50,
+    maxWin: '1000x',
+    jackpot: '500,000',
+    color: '#FFD700',
+    hot: true
+  },
+  {
+    id: 'cyber',
+    name: 'Cyber Scatter',
+    icon: '🤖',
+    theme: 'neon',
+    description: 'Neon Megaways action with 6 intense reels',
+    minBet: 20,
+    maxWin: '5000x',
+    jackpot: '1,000,000',
+    color: '#39FF14',
+    new: true
+  },
+  {
+    id: 'sugar',
+    name: 'Sugar Rush',
+    icon: '🍬',
+    theme: 'candy',
+    description: 'Sweet cluster pays in a pastel candy land',
+    minBet: 10,
+    maxWin: '800x',
+    jackpot: '250,000',
+    color: '#FF69B4',
+    popular: true
+  },
+  {
+    id: 'wildwest',
+    name: 'Wild West Heist',
+    icon: '🤠',
+    theme: 'western',
+    description: 'High-stakes frontier action across 4 wild reels',
+    minBet: 25,
+    maxWin: '400x',
+    jackpot: '150,000',
+    color: '#DAA520'
+  },
+  {
     id: 'classic',
     name: '777 Classic Slots',
     icon: '🎰',
@@ -101,7 +262,7 @@ export function SlotsHub() {
             <span className="glitter-text">🎰 PREMIUM SLOTS 🎰</span>
           </h1>
           <p className="hub-subtitle">
-            Choose from 6 exciting slot machines • Progressive Jackpots • Massive Wins
+            Choose from 20 exciting slot machines • Progressive Jackpots • Multi-Reel Grid Mechanics
           </p>
           <div className="jackpot-ticker">
             <div className="ticker-label">🏆 TOTAL JACKPOT</div>

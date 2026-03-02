@@ -7,35 +7,49 @@ import { authenticate } from '../middleware/auth'
 const games = new Hono<HonoEnv>()
 
 const spinSchema = z.object({
-  betAmount: z.number().min(1).max(1000),
-  gameType: z.enum(['slots', 'fishing'])
+  betAmount: z.number().min(1).max(10000),
+  gameType: z.enum(['slots', 'fishing']),
+  theme: z.string().optional()
 })
 
-// Generate slot result (simple implementation)
-function generateSlotResult(): number[] {
-  return [
-    Math.floor(Math.random() * 7) + 1,
-    Math.floor(Math.random() * 7) + 1,
-    Math.floor(Math.random() * 7) + 1
-  ]
+// Generate slot result (dynamic reels)
+function generateSlotResult(reels: number = 3): number[] {
+  const result = []
+  for (let i = 0; i < reels; i++) {
+    result.push(Math.floor(Math.random() * 7) + 1)
+  }
+  return result
 }
 
 // Calculate win amount based on result
 function calculateWin(betAmount: number, result: number[]): number {
-  // Three of a kind
-  if (result[0] === result[1] && result[1] === result[2]) {
-    if (result[0] === 7) {
-      return betAmount * 100  // Jackpot!
+  const counts: Record<number, number> = {}
+  let maxCount = 0
+  let maxNum = 0
+
+  for (const num of result) {
+    counts[num] = (counts[num] || 0) + 1
+    if (counts[num] > maxCount) {
+      maxCount = counts[num]
+      maxNum = num
     }
-    return betAmount * 10
   }
 
-  // Two of a kind
-  if (result[0] === result[1] || result[1] === result[2] || result[0] === result[2]) {
+  // All match (Jackpot)
+  if (maxCount === result.length) {
+    if (maxNum === 7) {
+      // 3->100, 4->1000, 5->10000, 6->100000
+      return betAmount * Math.pow(10, result.length - 1)
+    }
+    // 3->10, 4->50, 5->250
+    return betAmount * Math.pow(5, result.length - 2) * 2
+  }
+
+  // Majority match
+  if (maxCount >= Math.ceil(result.length / 2)) {
     return betAmount * 2
   }
 
-  // No win
   return 0
 }
 
@@ -46,7 +60,13 @@ games.post(
   zValidator('json', spinSchema),
   async (c) => {
     const user = c.get('user')
-    const { betAmount } = c.req.valid('json')
+    const { betAmount, theme } = c.req.valid('json')
+
+    // Determine reels based on theme
+    let reels = 3
+    if (theme && ['pharaoh', 'sugar', 'forest', 'pirate', 'vampire', 'leprechaun', 'safari'].includes(theme)) reels = 5
+    else if (theme && ['cyber', 'ninja', 'olympus', 'mafia'].includes(theme)) reels = 6
+    else if (theme && ['wildwest', 'galactic', 'viking'].includes(theme)) reels = 4
 
     // Check user balance
     const userRecord = await c.env.DB
@@ -59,7 +79,7 @@ games.post(
     }
 
     // Generate spin result
-    const result = generateSlotResult()
+    const result = generateSlotResult(reels)
     const winAmount = calculateWin(betAmount, result)
     const newBalance = userRecord.token_balance - betAmount + winAmount
 
@@ -96,8 +116,8 @@ games.get('/leaderboard/:period', async (c) => {
   const timeFilter = period === 'daily'
     ? "WHERE created_at > datetime('now', '-1 day')"
     : period === 'weekly'
-    ? "WHERE created_at > datetime('now', '-7 days')"
-    : ''
+      ? "WHERE created_at > datetime('now', '-7 days')"
+      : ''
 
   const leaderboard = await c.env.DB
     .prepare(`

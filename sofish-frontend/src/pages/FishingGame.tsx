@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
-import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
+import { GlowingOrbs, GradientText, FloatingElement, ParticleExplosion } from '../components/EnhancedUI'
+import { GameHeader } from '../components/GameHeader'
 
 interface Fish {
   id: number
@@ -143,6 +144,8 @@ export function FishingGame() {
   const [bullets, setBullets] = useState(currentMode.bullets)
   const [shootPower, setShootPower] = useState(1)
   const [showResult, setShowResult] = useState(false)
+  const [redMode, setRedMode] = useState(false)
+  const [explosion, setExplosion] = useState<{ active: boolean, x: number, y: number }>({ active: false, x: 0, y: 0 })
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const { data: balanceData, refetch: refetchBalance } = useUserBalance()
 
@@ -155,6 +158,8 @@ export function FishingGame() {
     setTimeLeft(currentMode.timeLimit)
     setBullets(currentMode.bullets)
     setShowResult(false)
+    setRedMode(false)
+    setExplosion({ active: false, x: 0, y: 0 })
     spawnFish()
   }
 
@@ -217,6 +222,14 @@ export function FishingGame() {
         f.id === clickedFish.id ? { ...f, caught: true } : f
       ))
       setScore(prev => prev + clickedFish.value)
+
+      // Trigger polish effects based on rarity
+      setExplosion({ active: true, x: e.clientX, y: e.clientY })
+      if (['epic', 'legendary'].includes(clickedFish.type)) {
+        setRedMode(true)
+        setTimeout(() => setRedMode(false), 3000)
+      }
+      setTimeout(() => setExplosion(prev => ({ ...prev, active: false })), 800)
 
       // Spawn new fish to replace caught one
       setTimeout(() => {
@@ -309,7 +322,21 @@ export function FishingGame() {
         <GlowingOrbs count={4} colors={[currentMode.colors.primary, currentMode.colors.secondary, currentMode.colors.accent, '#1E3A8A']} />
       </div>
 
-      <div className="container">
+      <div className={`container ${redMode ? 'red-mode-active' : ''}`}>
+        <GameHeader
+          redMode={redMode}
+          isSpinning={isPlaying}
+          characterNormal="🎣"
+          characterRed="🔥🐙🔥"
+        />
+
+        <ParticleExplosion
+          trigger={explosion.active}
+          x={explosion.x}
+          y={explosion.y}
+          particleCount={redMode ? 100 : 30}
+        />
+
         <motion.div
           className="game-header text-center"
           initial={{ opacity: 0, y: -30 }}
@@ -424,7 +451,7 @@ export function FishingGame() {
               </div>
             </div>
 
-            <div className="game-canvas-container card" style={{ background: currentMode.background }}>
+            <div className={`game-canvas-container card ${redMode ? 'red-mode-active' : ''}`} style={{ background: currentMode.background }}>
               <canvas
                 ref={canvasRef}
                 width={800}
@@ -770,6 +797,31 @@ export function FishingGame() {
 
         .back-link:hover {
           color: var(--gold);
+        }
+
+        .red-mode-active.game-canvas-container {
+          box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.5);
+          border-color: #FF0000;
+          animation: pulse-red 0.5s infinite alternate, screen-shake 0.5s infinite;
+        }
+
+        @keyframes pulse-red {
+          from { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 30px rgba(255, 0, 0, 0.4); }
+          to { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 60px rgba(255, 0, 0, 0.8); }
+        }
+
+        @keyframes screen-shake {
+          0% { transform: translate(1px, 1px) rotate(0deg); }
+          10% { transform: translate(-1px, -2px) rotate(-1deg); }
+          20% { transform: translate(-3px, 0px) rotate(1deg); }
+          30% { transform: translate(3px, 2px) rotate(0deg); }
+          40% { transform: translate(1px, -1px) rotate(1deg); }
+          50% { transform: translate(-1px, 2px) rotate(-1deg); }
+          60% { transform: translate(-3px, 1px) rotate(0deg); }
+          70% { transform: translate(3px, 1px) rotate(-1deg); }
+          80% { transform: translate(-1px, -1px) rotate(1deg); }
+          90% { transform: translate(1px, 2px) rotate(0deg); }
+          100% { transform: translate(1px, -2px) rotate(-1deg); }
         }
       `}</style>
     </motion.div>

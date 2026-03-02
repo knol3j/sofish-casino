@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useSpinSlots, useUserBalance } from '../hooks/useGames'
 import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
+import { GameHeader } from '../components/GameHeader'
 
 interface SlotTheme {
   name: string
@@ -17,9 +18,165 @@ interface SlotTheme {
   minBet: number
   multipliers: { [key: string]: number }
   background: string
+  reels?: number
+  layout?: 'classic' | 'megaways' | 'cluster'
 }
 
 const THEMES: { [key: string]: SlotTheme } = {
+  pharaoh: {
+    name: "PHARAOH'S TOMB",
+    subtitle: 'Ancient Egyptian Riches',
+    symbols: ['🪲', '🏺', '👁️', '⚱️', '🐫', '🛕', '🦅'],
+    colors: { primary: '#FFD700', secondary: '#B8860B', accent: '#000080', glow: 'rgba(255, 215, 0, 0.5)' },
+    minBet: 50,
+    multipliers: { '👁️👁️👁️👁️👁️': 1000, '🪲🪲🪲🪲🪲': 500, '🏺🏺🏺🏺🏺': 250 },
+    background: 'linear-gradient(135deg, #1A1100 0%, #332200 50%, #1A1100 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  cyber: {
+    name: 'CYBER SCATTER',
+    subtitle: 'Neon Megaways',
+    symbols: ['🤖', '⚡', '💻', '🔋', '🚀', '🛸', '🎆'],
+    colors: { primary: '#FF00FF', secondary: '#00FFFF', accent: '#39FF14', glow: 'rgba(255, 0, 255, 0.5)' },
+    minBet: 20,
+    multipliers: { '🤖🤖🤖🤖🤖🤖': 5000, '⚡⚡⚡⚡⚡⚡': 1000, '💻💻💻💻💻💻': 500 },
+    background: 'linear-gradient(135deg, #0d0221 0%, #260a42 50%, #0d0221 100%)',
+    reels: 6,
+    layout: 'megaways'
+  },
+  sugar: {
+    name: 'SUGAR RUSH',
+    subtitle: 'Sweet Cluster Pays',
+    symbols: ['🍬', '🍭', '🧁', '🍩', '🍫', '🍦', '🍡'],
+    colors: { primary: '#FF69B4', secondary: '#00FA9A', accent: '#87CEFA', glow: 'rgba(255, 105, 180, 0.5)' },
+    minBet: 10,
+    multipliers: { '🍬🍬🍬🍬🍬': 800, '🍭🍭🍭🍭🍭': 400, '🧁🧁🧁🧁🧁': 200 },
+    background: 'linear-gradient(135deg, #FFB6C1 0%, #FFE4E1 50%, #FFC0CB 100%)',
+    reels: 5,
+    layout: 'cluster'
+  },
+  wildwest: {
+    name: 'WILD WEST HEIST',
+    subtitle: 'Frontier Hold & Spin',
+    symbols: ['🤠', '🐎', '🧨', '🧲', '🚂', '💰', '🌵'],
+    colors: { primary: '#DAA520', secondary: '#8B4513', accent: '#A0522D', glow: 'rgba(218, 165, 32, 0.5)' },
+    minBet: 25,
+    multipliers: { '🤠🤠🤠🤠': 400, '💰💰💰💰': 200, '🧨🧨🧨🧨': 100 },
+    background: 'linear-gradient(135deg, #2b1d14 0%, #4a3424 50%, #2b1d14 100%)',
+    reels: 4,
+    layout: 'classic'
+  },
+  forest: {
+    name: 'MYSTIC FOREST',
+    subtitle: 'Enchanted Fantasy Wins',
+    symbols: ['🧚', '🦄', '🍄', '🔮', '🦉', '🌿', '⭐'],
+    colors: { primary: '#32CD32', secondary: '#8A2BE2', accent: '#FFD700', glow: 'rgba(50, 205, 50, 0.5)' },
+    minBet: 15,
+    multipliers: { '🧚🧚🧚🧚🧚': 800, '🦄🦄🦄🦄🦄': 400, '🔮🔮🔮🔮🔮': 200 },
+    background: 'linear-gradient(135deg, #0a1f0a 0%, #1f0a33 50%, #0a1f0a 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  ninja: {
+    name: 'NEON NINJA',
+    subtitle: 'Cyberpunk Action Megaways',
+    symbols: ['🥷', '⚔️', '🏮', '🐉', '💨', '🌑', '⛩️'],
+    colors: { primary: '#FF3131', secondary: '#1F51FF', accent: '#FFFFFF', glow: 'rgba(255, 49, 49, 0.5)' },
+    minBet: 30,
+    multipliers: { '🥷🥷🥷🥷🥷🥷': 6000, '🐉🐉🐉🐉🐉🐉': 1500, '⚔️⚔️⚔️⚔️⚔️⚔️': 600 },
+    background: 'linear-gradient(135deg, #120305 0%, #0a1128 50%, #120305 100%)',
+    reels: 6,
+    layout: 'megaways'
+  },
+  pirate: {
+    name: "PIRATE'S BOUNTY",
+    subtitle: 'High Sea Treasures',
+    symbols: ['🏴‍☠️', '⚓', '🦜', '🧭', '💣', '💰', '🗺️'],
+    colors: { primary: '#DAA520', secondary: '#000080', accent: '#8B4513', glow: 'rgba(218, 165, 32, 0.5)' },
+    minBet: 25,
+    multipliers: { '🏴‍☠️🏴‍☠️🏴‍☠️🏴‍☠️🏴‍☠️': 1000, '💰💰💰💰💰': 500, '🗺️🗺️🗺️🗺️🗺️': 250 },
+    background: 'linear-gradient(135deg, #0b1d3a 0%, #1a1100 50%, #0b1d3a 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  galactic: {
+    name: 'GALACTIC GEMS',
+    subtitle: 'Deep Space Hold & Spin',
+    symbols: ['💎', '🪐', '☄️', '🔭', '🛸', '🌟', '👨‍🚀'],
+    colors: { primary: '#FF00FF', secondary: '#00FFFF', accent: '#000000', glow: 'rgba(255, 0, 255, 0.5)' },
+    minBet: 40,
+    multipliers: { '💎💎💎💎': 500, '☄️☄️☄️☄️': 250, '🛸🛸🛸🛸': 150 },
+    background: 'linear-gradient(135deg, #05051a 0%, #1a051a 50%, #05051a 100%)',
+    reels: 4,
+    layout: 'classic'
+  },
+  olympus: {
+    name: 'OLYMPUS GLORY',
+    subtitle: 'Godly Megaways',
+    symbols: ['⚡', '👑', '🏺', '🏛️', '🦅', '🔥', '🛡️'],
+    colors: { primary: '#FFD700', secondary: '#FFFFFF', accent: '#87CEEB', glow: 'rgba(255, 215, 0, 0.5)' },
+    minBet: 40,
+    multipliers: { '⚡⚡⚡⚡⚡⚡': 8000, '👑👑👑👑👑👑': 2000, '🏺🏺🏺🏺🏺🏺': 800 },
+    background: 'linear-gradient(135deg, #1e3c72 0%, #2a5298 50%, #1e3c72 100%)',
+    reels: 6,
+    layout: 'megaways'
+  },
+  vampire: {
+    name: "VAMPIRE'S KISS",
+    subtitle: 'Immortal Riches',
+    symbols: ['🦇', '🩸', '🧛', '🏰', '🍷', '🥀', '🔮'],
+    colors: { primary: '#FF0000', secondary: '#800080', accent: '#000000', glow: 'rgba(255, 0, 0, 0.5)' },
+    minBet: 20,
+    multipliers: { '🧛🧛🧛🧛🧛': 1200, '🩸🩸🩸🩸🩸': 600, '🦇🦇🦇🦇🦇': 300 },
+    background: 'linear-gradient(135deg, #0f0000 0%, #3a0000 50%, #0f0000 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  leprechaun: {
+    name: "LEPRECHAUN'S LUCK",
+    subtitle: 'Rainbow Jackpots',
+    symbols: ['☘️', '🌈', '🎩', '🍀', '🍺', '💰', '🍄'],
+    colors: { primary: '#00FF00', secondary: '#FFD700', accent: '#008000', glow: 'rgba(0, 255, 0, 0.5)' },
+    minBet: 10,
+    multipliers: { '☘️☘️☘️☘️☘️': 800, '🌈🌈🌈🌈🌈': 400, '🎩🎩🎩🎩🎩': 200 },
+    background: 'linear-gradient(135deg, #004d00 0%, #008000 50%, #004d00 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  viking: {
+    name: 'VIKING VAULT',
+    subtitle: 'Norse Hold & Spin',
+    symbols: ['🪓', '🛡️', '⚔️', '🍺', '🚢', '🐺', '❄️'],
+    colors: { primary: '#A0522D', secondary: '#4682B4', accent: '#C0C0C0', glow: 'rgba(160, 82, 45, 0.5)' },
+    minBet: 25,
+    multipliers: { '🪓🪓🪓🪓': 500, '🛡️🛡️🛡️🛡️': 250, '⚔️⚔️⚔️⚔️': 150 },
+    background: 'linear-gradient(135deg, #1c2331 0%, #39424e 50%, #1c2331 100%)',
+    reels: 4,
+    layout: 'classic'
+  },
+  safari: {
+    name: 'SAFARI STRIKE',
+    subtitle: 'Wild Savannah Payouts',
+    symbols: ['🦁', '🐘', '🦒', '🦓', '🐆', '🌍', '💎'],
+    colors: { primary: '#FFA500', secondary: '#DEB887', accent: '#556B2F', glow: 'rgba(255, 165, 0, 0.5)' },
+    minBet: 15,
+    multipliers: { '🦁🦁🦁🦁🦁': 1000, '🐘🐘🐘🐘🐘': 500, '🦒🦒🦒🦒🦒': 250 },
+    background: 'linear-gradient(135deg, #4b3621 0%, #8b5a2b 50%, #4b3621 100%)',
+    reels: 5,
+    layout: 'classic'
+  },
+  mafia: {
+    name: 'MAFIA MAYHEM',
+    subtitle: '1920s Syndicate Megaways',
+    symbols: ['🕴️', '💣', '💼', '🍸', '💰', '🔫', '🎲'],
+    colors: { primary: '#B22222', secondary: '#2F4F4F', accent: '#FFD700', glow: 'rgba(178, 34, 34, 0.5)' },
+    minBet: 50,
+    multipliers: { '🕴️🕴️🕴️🕴️🕴️🕴️': 7000, '💣💣💣💣💣💣': 2000, '💼💼💼💼💼💼': 1000 },
+    background: 'linear-gradient(135deg, #000000 0%, #1a1a1a 50%, #000000 100%)',
+    reels: 6,
+    layout: 'megaways'
+  },
   classic: {
     name: '777 CLASSIC',
     subtitle: 'The Original Vegas Experience',
@@ -79,19 +236,19 @@ const THEMES: { [key: string]: SlotTheme } = {
 export function SlotsGame() {
   const { theme = 'classic' } = useParams<{ theme: string }>()
   const currentTheme = THEMES[theme] || THEMES.classic
+  const numReels = currentTheme.reels || 3
   const [betAmount, setBetAmount] = useState(currentTheme.minBet)
   const [result, setResult] = useState<number[] | null>(null)
   const [winAmount, setWinAmount] = useState<number>(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [showWin, setShowWin] = useState(false)
-  const [reelPositions, setReelPositions] = useState([0, 0, 0])
-  const [reelBlurs, setReelBlurs] = useState([0, 0, 0])
+  const [reelPositions, setReelPositions] = useState(Array(numReels).fill(0))
+  const [reelBlurs, setReelBlurs] = useState(Array(numReels).fill(0))
   const [particles, setParticles] = useState<Array<{ id: number, x: number, y: number, color: string }>>([])
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationType, setCelebrationType] = useState<'normal' | 'big' | 'mega' | 'jackpot'>('normal')
   const [isAnticipation, setIsAnticipation] = useState(false)
   const [redMode, setRedMode] = useState(false)
-  const [jackpots, setJackpots] = useState({ mega: 1000000, major: 100000, minor: 10000, mini: 1000 })
   const animationFrameRef = useRef<number>()
 
   const spinMutation = useSpinSlots()
@@ -99,25 +256,15 @@ export function SlotsGame() {
 
   const SYMBOL_HEIGHT = 120
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setJackpots(prev => ({
-        mega: prev.mega + Math.random() * 10,
-        major: prev.major + Math.random() * 5,
-        minor: prev.minor + Math.random() * 2,
-        mini: prev.mini + Math.random() * 1
-      }))
-    }, 1000)
-    return () => clearInterval(interval)
-  }, [])
-
   // Reset bet when theme changes
   useEffect(() => {
+    const reelsCount = currentTheme.reels || 3
     setBetAmount(currentTheme.minBet)
     setResult(null)
     setShowWin(false)
-    setReelPositions([0, 0, 0])
-  }, [theme, currentTheme.minBet])
+    setReelPositions(Array(reelsCount).fill(0))
+    setReelBlurs(Array(reelsCount).fill(0))
+  }, [theme, currentTheme.minBet, currentTheme.reels])
 
   const animateReel = (reelIndex: number, targetSymbol: number, duration: number) => {
     const startTime = Date.now()
@@ -198,10 +345,10 @@ export function SlotsGame() {
     setRedMode(false)
 
     try {
-      const data = await spinMutation.mutateAsync(betAmount)
+      const data = await spinMutation.mutateAsync({ betAmount, theme })
 
-      const isTease = data.result[0] === data.result[1]
-      const spinDurations = isTease ? [1600, 2000, 4500] : [1600, 2000, 2400]
+      const isTease = data.result.length > 2 && new Set(data.result.slice(0, data.result.length - 1)).size === 1
+      const spinDurations = Array(numReels).fill(0).map((_, i) => isTease && i === numReels - 1 ? 4500 : 1600 + i * 400)
 
       if (isTease) {
         setTimeout(() => setIsAnticipation(true), 2000)
@@ -374,33 +521,12 @@ export function SlotsGame() {
           {/* Top Decorations */}
           <div className="machine-top">
             {/* Dynamic Character & Jackpots */}
-            <div className={`dynamic-header ${redMode ? 'red-mode' : ''}`}>
-              <motion.div
-                className={`character-zeus ${redMode ? 'enraged' : ''}`}
-                animate={isSpinning ? { y: [-5, 5, -5] } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                {redMode ? '🌩️😡⚡' : '⚡🧔⚡'}
-              </motion.div>
-              <div className="jackpots-display">
-                <div className="jackpot-tier mega">
-                  <span className="tier-name">MEGA</span>
-                  <span className="tier-value">${Math.floor(jackpots.mega).toLocaleString()}</span>
-                </div>
-                <div className="jackpot-tier major">
-                  <span className="tier-name">MAJOR</span>
-                  <span className="tier-value">${Math.floor(jackpots.major).toLocaleString()}</span>
-                </div>
-                <div className="jackpot-tier minor">
-                  <span className="tier-name">MINOR</span>
-                  <span className="tier-value">${Math.floor(jackpots.minor).toLocaleString()}</span>
-                </div>
-                <div className="jackpot-tier mini">
-                  <span className="tier-name">MINI</span>
-                  <span className="tier-value">${Math.floor(jackpots.mini).toLocaleString()}</span>
-                </div>
-              </div>
-            </div>
+            <GameHeader
+              redMode={redMode}
+              isSpinning={isSpinning}
+              characterNormal="⚡🧔⚡"
+              characterRed="🌩️😡⚡"
+            />
 
             <div className="marquee-lights">
               {[...Array(24)].map((_, i) => (
@@ -423,9 +549,9 @@ export function SlotsGame() {
             <div className="win-line" style={{ background: redMode ? '#FF0000' : currentTheme.colors.primary, boxShadow: `0 0 20px ${redMode ? 'rgba(255,0,0,0.8)' : currentTheme.colors.glow}` }} />
 
             {/* Reels */}
-            <div className="reels-container">
-              {[0, 1, 2].map((reelIndex) => (
-                <div key={reelIndex} className={`reel-wrapper ${isAnticipation && reelIndex === 2 ? 'anticipation-glow' : ''}`}>
+            <div className={`reels-container reels-${numReels}`}>
+              {[...Array(numReels)].map((_, reelIndex) => (
+                <div key={reelIndex} className={`reel-wrapper ${isAnticipation && reelIndex === numReels - 1 ? 'anticipation-glow' : ''}`}>
                   <div className="reel-frame" style={{ borderColor: redMode ? '#FF0000' : `${currentTheme.colors.primary}40` }}>
                     <div
                       className="reel"
@@ -1416,85 +1542,6 @@ export function SlotsGame() {
         }
 
         /* NEW POLISH STYLES */
-        .dynamic-header {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          margin-bottom: 20px;
-          position: relative;
-        }
-        
-        .character-zeus {
-          font-size: 64px;
-          margin-bottom: 10px;
-          text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
-          transition: all 0.3s ease;
-          z-index: 10;
-        }
-
-        .character-zeus.enraged {
-          transform: scale(1.2);
-          text-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
-          animation: character-shake 0.5s infinite;
-        }
-        
-        @keyframes character-shake {
-          0% { transform: translate(1px, 1px) rotate(0deg) scale(1.2); }
-          10% { transform: translate(-1px, -2px) rotate(-1deg) scale(1.2); }
-          20% { transform: translate(-3px, 0px) rotate(1deg) scale(1.2); }
-          30% { transform: translate(3px, 2px) rotate(0deg) scale(1.2); }
-          40% { transform: translate(1px, -1px) rotate(1deg) scale(1.2); }
-          50% { transform: translate(-1px, 2px) rotate(-1deg) scale(1.2); }
-          60% { transform: translate(-3px, 1px) rotate(0deg) scale(1.2); }
-          70% { transform: translate(3px, 1px) rotate(-1deg) scale(1.2); }
-          80% { transform: translate(-1px, -1px) rotate(1deg) scale(1.2); }
-          90% { transform: translate(1px, 2px) rotate(0deg) scale(1.2); }
-          100% { transform: translate(1px, -2px) rotate(-1deg) scale(1.2); }
-        }
-
-        .jackpots-display {
-          display: flex;
-          gap: 15px;
-          background: rgba(0, 0, 0, 0.6);
-          padding: 10px 20px;
-          border-radius: 12px;
-          border: 2px solid var(--gold);
-          box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.4);
-        }
-
-        .jackpot-tier {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          min-width: 100px;
-        }
-
-        .tier-name {
-          font-size: 10px;
-          font-weight: 800;
-          letter-spacing: 2px;
-          color: #fff;
-          text-shadow: 0 0 5px currentColor;
-        }
-        
-        .tier-value {
-          font-family: 'Cinzel', serif;
-          font-weight: 900;
-          font-size: 18px;
-        }
-
-        .jackpot-tier.mega .tier-name { color: #FFD700; }
-        .jackpot-tier.mega .tier-value { color: #FFF; text-shadow: 0 0 10px #FFD700; }
-        
-        .jackpot-tier.major .tier-name { color: #FF6347; }
-        .jackpot-tier.major .tier-value { color: #FFF; text-shadow: 0 0 10px #FF6347; }
-        
-        .jackpot-tier.minor .tier-name { color: #00CED1; }
-        .jackpot-tier.minor .tier-value { color: #FFF; text-shadow: 0 0 10px #00CED1; }
-        
-        .jackpot-tier.mini .tier-name { color: #32CD32; }
-        .jackpot-tier.mini .tier-value { color: #FFF; text-shadow: 0 0 10px #32CD32; }
-
         .red-mode-active .machine-body {
           box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.5);
           border-color: #FF0000;

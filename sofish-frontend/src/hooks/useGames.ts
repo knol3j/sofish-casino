@@ -8,7 +8,7 @@ function getToken(): string | null {
 
 export function useSpinSlots() {
   const mutation = useMutation({
-    mutationFn: async (betAmount: number) => {
+    mutationFn: async ({ betAmount, theme }: { betAmount: number; theme?: string }) => {
       const token = getToken()
       if (!token) {
         throw new Error('Not authenticated')
@@ -20,7 +20,7 @@ export function useSpinSlots() {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'
         },
-        body: JSON.stringify({ betAmount, gameType: 'slots' })
+        body: JSON.stringify({ betAmount, gameType: 'slots', theme })
       })
 
       if (!response.ok) {

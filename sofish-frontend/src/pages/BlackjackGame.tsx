@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
-import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
+import { GlowingOrbs, GradientText, FloatingElement, ParticleExplosion } from '../components/EnhancedUI'
+import { GameHeader } from '../components/GameHeader'
 
 type Card = {
   suit: '♠️' | '♥️' | '♦️' | '♣️'
@@ -19,6 +20,9 @@ export function BlackjackGame() {
   const [dealerHand, setDealerHand] = useState<Card[]>([])
   const [result, setResult] = useState<string>('')
   const [winAmount, setWinAmount] = useState(0)
+  const [redMode, setRedMode] = useState(false)
+  const [isDealing, setIsDealing] = useState(false)
+  const [explosion, setExplosion] = useState(false)
   const { data: balanceData, refetch: refetchBalance } = useUserBalance()
 
   const createDeck = (): Card[] => {
@@ -71,6 +75,10 @@ export function BlackjackGame() {
     setGameState('playing')
     setResult('')
     setWinAmount(0)
+    setRedMode(false)
+    setExplosion(false)
+    setIsDealing(true)
+    setTimeout(() => setIsDealing(false), 1000)
 
     // Check for blackjack
     if (calculateHandValue(playerCards) === 21) {
@@ -119,12 +127,17 @@ export function BlackjackGame() {
     } else if (dealerValue > 21) {
       resultText = '🎉 Dealer BUST! You win!'
       winnings = betAmount * 2
+      setExplosion(true)
+      if (betAmount >= 50) setRedMode(true)
     } else if (isBlackjack && playerValue === 21 && finalPlayerHand.length === 2) {
       resultText = '🌟 BLACKJACK! You win 3:2!'
       winnings = betAmount * 2.5
+      setRedMode(true)
+      setExplosion(true)
     } else if (playerValue > dealerValue) {
       resultText = '🎊 You win!'
       winnings = betAmount * 2
+      setExplosion(true)
     } else if (playerValue === dealerValue) {
       resultText = '🤝 Push! Bet returned.'
       winnings = betAmount
@@ -158,7 +171,21 @@ export function BlackjackGame() {
         <GlowingOrbs count={4} colors={['#00D68F', '#FFD700', '#1E293B', '#8B5CF6']} />
       </div>
 
-      <div className="container">
+      <div className={`container ${redMode ? 'red-mode-active' : ''}`}>
+        <GameHeader
+          redMode={redMode}
+          isSpinning={isDealing}
+          characterNormal="🕴️"
+          characterRed="🎰🔥"
+        />
+
+        <ParticleExplosion
+          trigger={explosion}
+          x={typeof window !== 'undefined' ? window.innerWidth / 2 : 500}
+          y={typeof window !== 'undefined' ? window.innerHeight / 2 : 500}
+          particleCount={100}
+        />
+
         <motion.div
           className="game-header text-center"
           initial={{ opacity: 0, y: -30 }}
@@ -701,6 +728,17 @@ export function BlackjackGame() {
           bottom: 0;
           pointer-events: none;
           z-index: 0;
+        }
+
+        .red-mode-active .game-table {
+          box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.5);
+          border-color: #FF0000;
+          animation: pulse-red 1s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+          from { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 30px rgba(255, 0, 0, 0.4); }
+          to { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 60px rgba(255, 0, 0, 0.8); }
         }
       `}</style>
     </motion.div>

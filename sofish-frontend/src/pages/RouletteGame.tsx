@@ -1,13 +1,14 @@
 import { useState, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { useUserBalance } from '../hooks/useGames'
-import { GlowingOrbs, GradientText, FloatingElement } from '../components/EnhancedUI'
+import { GlowingOrbs, GradientText, FloatingElement, ParticleExplosion } from '../components/EnhancedUI'
+import { GameHeader } from '../components/GameHeader'
 
 const ROULETTE_NUMBERS = [
   { number: 0, color: 'green' },
   ...Array.from({ length: 36 }, (_, i) => ({
     number: i + 1,
-    color: [1,3,5,7,9,12,14,16,18,19,21,23,25,27,30,32,34,36].includes(i + 1) ? 'red' : 'black'
+    color: [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36].includes(i + 1) ? 'red' : 'black'
   }))
 ]
 
@@ -26,6 +27,9 @@ export function RouletteGame() {
   const [result, setResult] = useState<number | null>(null)
   const [winAmount, setWinAmount] = useState(0)
   const [rotation, setRotation] = useState(0)
+  const [redMode, setRedMode] = useState(false)
+  const [explosion, setExplosion] = useState(false)
+  const [anticipation, setAnticipation] = useState(false)
   const animationFrameRef = useRef<number>()
   const { data: balanceData, refetch: refetchBalance } = useUserBalance()
 
@@ -59,6 +63,9 @@ export function RouletteGame() {
     setSpinning(true)
     setWinAmount(0)
     setResult(null)
+    setRedMode(false)
+    setExplosion(false)
+    setAnticipation(true)
 
     // Generate result
     const resultNumber = Math.floor(Math.random() * 37)
@@ -123,6 +130,15 @@ export function RouletteGame() {
 
         setWinAmount(totalWin)
         setSpinning(false)
+        setAnticipation(false)
+
+        if (totalWin > 0) {
+          setExplosion(true)
+          if (totalWin >= getTotalBetAmount() * 5) {
+            setRedMode(true)
+          }
+        }
+
         refetchBalance()
       }
     }
@@ -146,7 +162,21 @@ export function RouletteGame() {
         <GlowingOrbs count={4} colors={['#00D68F', '#FF4757', '#FFD700', '#000000']} />
       </div>
 
-      <div className="container">
+      <div className={`container ${redMode ? 'red-mode-active' : ''}`}>
+        <GameHeader
+          redMode={redMode}
+          isSpinning={spinning}
+          characterNormal="🎩"
+          characterRed="🎰🔥"
+        />
+
+        <ParticleExplosion
+          trigger={explosion}
+          x={typeof window !== 'undefined' ? window.innerWidth / 2 : 500}
+          y={typeof window !== 'undefined' ? window.innerHeight / 2 : 500}
+          particleCount={150}
+        />
+
         <motion.div
           className="game-header text-center"
           initial={{ opacity: 0, y: -30 }}
@@ -180,7 +210,7 @@ export function RouletteGame() {
           </motion.div>
         </motion.div>
 
-        <div className="roulette-container">
+        <div className={`roulette-container ${anticipation ? 'anticipation-active' : ''}`}>
           {/* Wheel */}
           <div className="wheel-container">
             <div
@@ -711,6 +741,28 @@ export function RouletteGame() {
           bottom: 0;
           pointer-events: none;
           z-index: 0;
+        }
+
+        .red-mode-active .roulette-wheel {
+          box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.5);
+          border-color: #FF0000;
+          animation: pulse-red 1s infinite alternate;
+        }
+
+        .anticipation-active .roulette-wheel {
+          box-shadow: 0 0 50px rgba(0, 217, 255, 0.8);
+          border-color: #00D9FF;
+          animation: pulse-cyan 0.5s infinite alternate;
+        }
+
+        @keyframes pulse-red {
+          from { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 30px rgba(255, 0, 0, 0.4); }
+          to { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 60px rgba(255, 0, 0, 0.8); }
+        }
+
+        @keyframes pulse-cyan {
+          from { box-shadow: 0 0 30px rgba(0, 217, 255, 0.4); }
+          to { box-shadow: 0 0 60px rgba(0, 217, 255, 0.8); }
         }
       `}</style>
     </motion.div>
