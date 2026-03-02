@@ -85,24 +85,29 @@ auth.post('/register', async (c) => {
 
 // Login
 auth.post('/login', async (c) => {
-  const { email, password } = await c.req.json()
+  try {
+    const { email, password } = await c.req.json()
 
-  const user = await c.env.DB.prepare(
-    'SELECT id, email, username, password_hash FROM users WHERE email = ?'
-  ).bind(email).first()
+    const user = await c.env.DB.prepare(
+      'SELECT id, email, username, password_hash FROM users WHERE email = ?'
+    ).bind(email).first()
 
-  if (!user || !(await verifyPassword(password, user.password_hash as string))) {
-    return c.json({ error: 'Invalid credentials' }, 401)
+    if (!user || !(await verifyPassword(password, user.password_hash as string))) {
+      return c.json({ error: 'Invalid credentials' }, 401)
+    }
+
+    const token = await jwt.sign({
+      sub: user.id,
+      email: user.email,
+      username: user.username,
+      exp: Math.floor(Date.now() / 1000) + (2 * 60 * 60)
+    }, c.env.JWT_SECRET)
+
+    return c.json({ token })
+  } catch (err: any) {
+    console.error("Login Error:", err);
+    return c.json({ error: err.message, stack: err.stack }, 500)
   }
-
-  const token = await jwt.sign({
-    sub: user.id,
-    email: user.email,
-    username: user.username,
-    exp: Math.floor(Date.now() / 1000) + (2 * 60 * 60)
-  }, c.env.JWT_SECRET)
-
-  return c.json({ token })
 })
 
 // Token refresh

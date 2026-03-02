@@ -86,15 +86,30 @@ export function SlotsGame() {
   const [showWin, setShowWin] = useState(false)
   const [reelPositions, setReelPositions] = useState([0, 0, 0])
   const [reelBlurs, setReelBlurs] = useState([0, 0, 0])
-  const [particles, setParticles] = useState<Array<{id: number, x: number, y: number, color: string}>>([])
+  const [particles, setParticles] = useState<Array<{ id: number, x: number, y: number, color: string }>>([])
   const [showCelebration, setShowCelebration] = useState(false)
   const [celebrationType, setCelebrationType] = useState<'normal' | 'big' | 'mega' | 'jackpot'>('normal')
+  const [isAnticipation, setIsAnticipation] = useState(false)
+  const [redMode, setRedMode] = useState(false)
+  const [jackpots, setJackpots] = useState({ mega: 1000000, major: 100000, minor: 10000, mini: 1000 })
   const animationFrameRef = useRef<number>()
 
   const spinMutation = useSpinSlots()
   const { data: balanceData, refetch: refetchBalance } = useUserBalance()
 
   const SYMBOL_HEIGHT = 120
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setJackpots(prev => ({
+        mega: prev.mega + Math.random() * 10,
+        major: prev.major + Math.random() * 5,
+        minor: prev.minor + Math.random() * 2,
+        mini: prev.mini + Math.random() * 1
+      }))
+    }, 1000)
+    return () => clearInterval(interval)
+  }, [])
 
   // Reset bet when theme changes
   useEffect(() => {
@@ -179,10 +194,18 @@ export function SlotsGame() {
     setShowWin(false)
     setShowCelebration(false)
     setParticles([])
+    setIsAnticipation(false)
+    setRedMode(false)
 
     try {
       const data = await spinMutation.mutateAsync(betAmount)
-      const spinDurations = [1600, 2000, 2400]
+
+      const isTease = data.result[0] === data.result[1]
+      const spinDurations = isTease ? [1600, 2000, 4500] : [1600, 2000, 2400]
+
+      if (isTease) {
+        setTimeout(() => setIsAnticipation(true), 2000)
+      }
 
       spinDurations.forEach((duration, reelIndex) => {
         animateReel(reelIndex, data.result[reelIndex] - 1, duration)
@@ -192,6 +215,7 @@ export function SlotsGame() {
         setResult(data.result)
         setWinAmount(data.winAmount)
         setIsSpinning(false)
+        setIsAnticipation(false)
         refetchBalance()
 
         if (data.isWin) {
@@ -200,9 +224,11 @@ export function SlotsGame() {
 
           if (multiplier >= 100) {
             setCelebrationType('jackpot')
+            setRedMode(true)
             triggerJackpotCelebration()
           } else if (multiplier >= 50) {
             setCelebrationType('mega')
+            setRedMode(true)
             triggerMegaWin()
           } else if (multiplier >= 10) {
             setCelebrationType('big')
@@ -218,6 +244,7 @@ export function SlotsGame() {
     } catch (error) {
       console.error('Spin failed:', error)
       setIsSpinning(false)
+      setIsAnticipation(false)
     }
   }
 
@@ -343,18 +370,47 @@ export function SlotsGame() {
         </motion.div>
 
         {/* Slot Machine */}
-        <div className="slot-machine">
+        <div className={`slot-machine ${redMode ? 'red-mode-active' : ''}`}>
           {/* Top Decorations */}
           <div className="machine-top">
+            {/* Dynamic Character & Jackpots */}
+            <div className={`dynamic-header ${redMode ? 'red-mode' : ''}`}>
+              <motion.div
+                className={`character-zeus ${redMode ? 'enraged' : ''}`}
+                animate={isSpinning ? { y: [-5, 5, -5] } : {}}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                {redMode ? '🌩️😡⚡' : '⚡🧔⚡'}
+              </motion.div>
+              <div className="jackpots-display">
+                <div className="jackpot-tier mega">
+                  <span className="tier-name">MEGA</span>
+                  <span className="tier-value">${Math.floor(jackpots.mega).toLocaleString()}</span>
+                </div>
+                <div className="jackpot-tier major">
+                  <span className="tier-name">MAJOR</span>
+                  <span className="tier-value">${Math.floor(jackpots.major).toLocaleString()}</span>
+                </div>
+                <div className="jackpot-tier minor">
+                  <span className="tier-name">MINOR</span>
+                  <span className="tier-value">${Math.floor(jackpots.minor).toLocaleString()}</span>
+                </div>
+                <div className="jackpot-tier mini">
+                  <span className="tier-name">MINI</span>
+                  <span className="tier-value">${Math.floor(jackpots.mini).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+
             <div className="marquee-lights">
               {[...Array(24)].map((_, i) => (
                 <div
                   key={i}
                   className={`light ${isSpinning ? 'spinning' : ''}`}
                   style={{
-                    background: currentTheme.colors.primary,
+                    background: redMode ? '#FF0000' : currentTheme.colors.primary,
                     animationDelay: `${i * 0.08}s`,
-                    boxShadow: `0 0 10px ${currentTheme.colors.glow}`
+                    boxShadow: `0 0 10px ${redMode ? 'rgba(255,0,0,0.8)' : currentTheme.colors.glow}`
                   }}
                 />
               ))}
@@ -362,15 +418,15 @@ export function SlotsGame() {
           </div>
 
           {/* Main Display */}
-          <div className="machine-body">
+          <div className={`machine-body ${isAnticipation ? 'anticipation-active' : ''}`}>
             {/* Win Line Indicator */}
-            <div className="win-line" style={{ background: currentTheme.colors.primary, boxShadow: `0 0 20px ${currentTheme.colors.glow}` }} />
+            <div className="win-line" style={{ background: redMode ? '#FF0000' : currentTheme.colors.primary, boxShadow: `0 0 20px ${redMode ? 'rgba(255,0,0,0.8)' : currentTheme.colors.glow}` }} />
 
             {/* Reels */}
             <div className="reels-container">
               {[0, 1, 2].map((reelIndex) => (
-                <div key={reelIndex} className="reel-wrapper">
-                  <div className="reel-frame" style={{ borderColor: `${currentTheme.colors.primary}40` }}>
+                <div key={reelIndex} className={`reel-wrapper ${isAnticipation && reelIndex === 2 ? 'anticipation-glow' : ''}`}>
+                  <div className="reel-frame" style={{ borderColor: redMode ? '#FF0000' : `${currentTheme.colors.primary}40` }}>
                     <div
                       className="reel"
                       style={{
@@ -477,9 +533,9 @@ export function SlotsGame() {
                   key={i}
                   className={`light ${isSpinning ? 'spinning' : ''}`}
                   style={{
-                    background: currentTheme.colors.primary,
+                    background: redMode ? '#FF0000' : currentTheme.colors.primary,
                     animationDelay: `${i * 0.08}s`,
-                    boxShadow: `0 0 10px ${currentTheme.colors.glow}`
+                    boxShadow: `0 0 10px ${redMode ? 'rgba(255,0,0,0.8)' : currentTheme.colors.glow}`
                   }}
                 />
               ))}
@@ -1357,6 +1413,115 @@ export function SlotsGame() {
           .combo {
             font-size: 18px;
           }
+        }
+
+        /* NEW POLISH STYLES */
+        .dynamic-header {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          margin-bottom: 20px;
+          position: relative;
+        }
+        
+        .character-zeus {
+          font-size: 64px;
+          margin-bottom: 10px;
+          text-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+          transition: all 0.3s ease;
+          z-index: 10;
+        }
+
+        .character-zeus.enraged {
+          transform: scale(1.2);
+          text-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+          animation: character-shake 0.5s infinite;
+        }
+        
+        @keyframes character-shake {
+          0% { transform: translate(1px, 1px) rotate(0deg) scale(1.2); }
+          10% { transform: translate(-1px, -2px) rotate(-1deg) scale(1.2); }
+          20% { transform: translate(-3px, 0px) rotate(1deg) scale(1.2); }
+          30% { transform: translate(3px, 2px) rotate(0deg) scale(1.2); }
+          40% { transform: translate(1px, -1px) rotate(1deg) scale(1.2); }
+          50% { transform: translate(-1px, 2px) rotate(-1deg) scale(1.2); }
+          60% { transform: translate(-3px, 1px) rotate(0deg) scale(1.2); }
+          70% { transform: translate(3px, 1px) rotate(-1deg) scale(1.2); }
+          80% { transform: translate(-1px, -1px) rotate(1deg) scale(1.2); }
+          90% { transform: translate(1px, 2px) rotate(0deg) scale(1.2); }
+          100% { transform: translate(1px, -2px) rotate(-1deg) scale(1.2); }
+        }
+
+        .jackpots-display {
+          display: flex;
+          gap: 15px;
+          background: rgba(0, 0, 0, 0.6);
+          padding: 10px 20px;
+          border-radius: 12px;
+          border: 2px solid var(--gold);
+          box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.2), 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .jackpot-tier {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          min-width: 100px;
+        }
+
+        .tier-name {
+          font-size: 10px;
+          font-weight: 800;
+          letter-spacing: 2px;
+          color: #fff;
+          text-shadow: 0 0 5px currentColor;
+        }
+        
+        .tier-value {
+          font-family: 'Cinzel', serif;
+          font-weight: 900;
+          font-size: 18px;
+        }
+
+        .jackpot-tier.mega .tier-name { color: #FFD700; }
+        .jackpot-tier.mega .tier-value { color: #FFF; text-shadow: 0 0 10px #FFD700; }
+        
+        .jackpot-tier.major .tier-name { color: #FF6347; }
+        .jackpot-tier.major .tier-value { color: #FFF; text-shadow: 0 0 10px #FF6347; }
+        
+        .jackpot-tier.minor .tier-name { color: #00CED1; }
+        .jackpot-tier.minor .tier-value { color: #FFF; text-shadow: 0 0 10px #00CED1; }
+        
+        .jackpot-tier.mini .tier-name { color: #32CD32; }
+        .jackpot-tier.mini .tier-value { color: #FFF; text-shadow: 0 0 10px #32CD32; }
+
+        .red-mode-active .machine-body {
+          box-shadow: 0 0 50px rgba(255, 0, 0, 0.8), inset 0 0 50px rgba(255, 0, 0, 0.5);
+          border-color: #FF0000;
+          animation: pulse-red 1s infinite alternate;
+        }
+        
+        @keyframes pulse-red {
+          from { box-shadow: 0 0 30px rgba(255, 0, 0, 0.6), inset 0 0 30px rgba(255, 0, 0, 0.4); }
+          to { box-shadow: 0 0 60px rgba(255, 0, 0, 1), inset 0 0 60px rgba(255, 0, 0, 0.8); }
+        }
+
+        .anticipation-active .reel-wrapper:not(:last-child) {
+          opacity: 0.5;
+          filter: grayscale(0.5);
+        }
+
+        .anticipation-glow {
+          box-shadow: 0 0 40px #00D9FF;
+          border-radius: 10px;
+          animation: pulse-anticipation 0.2s infinite;
+          z-index: 10;
+        }
+        
+        @keyframes pulse-anticipation {
+          0% { box-shadow: 0 0 20px #00D9FF; }
+          50% { box-shadow: 0 0 60px #00D9FF; }
+          100% { box-shadow: 0 0 20px #00D9FF; }
         }
       `}</style>
     </motion.div>
