@@ -59,7 +59,7 @@ export function EndorphinaSatoshisSecret() {
     setWinningLines([])
 
     try {
-      const data = await spinMutation.mutateAsync(betAmount)
+      const data = await spinMutation.mutateAsync({ betAmount })
 
       // Spin animation with realistic physics
       const spinDurations = [2000, 2300, 2600, 2900, 3200] // Staggered stops
