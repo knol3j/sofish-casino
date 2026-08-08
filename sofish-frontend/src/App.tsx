@@ -22,6 +22,7 @@ import { GamesHub } from './pages/GamesHub'
 import { Support } from './pages/Support'
 import { ResponsibleGaming } from './pages/ResponsibleGaming'
 import { EndorphinaSatoshisSecret } from './pages/providers/EndorphinaSatoshisSecret'
+import { SlotMachinePage } from './slots/engine/SlotMachine'
 import { logout } from './hooks/useAuth'
 import { useUserBalance } from './hooks/useGames'
 
@@ -239,6 +240,7 @@ function AppContent() {
           <Route path="/fishing-hub" element={<FishingHub />} />
           <Route path="/fishing/:mode?" element={<FishingGame />} />
           <Route path="/slots-hub" element={<SlotsHub />} />
+          <Route path="/slots/play/:gameId" element={<SlotMachinePage />} />
           <Route path="/slots/:theme?" element={<SlotsGame />} />
 
           {/* Provider Games */}
