@@ -1,0 +1,46 @@
+/* ===========================================================================
+ * games/candy-burst/skin.css — Candy Burst palette overrides.
+ * Loaded for its side effects by index.ts. Adds the game-specific ambient
+ * backdrop and symbol drop-shadows (SPEC §6).
+ * ========================================================================= */
+
+/* Ambient: floating sugar-sprinkle shimmer over the plum night. */
+.sf-machine {
+  --sf-game-glow: rgba(255, 143, 171, 0.35);
+}
+
+.sf-machine .sf-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle 90px at 15% 25%, rgba(255, 143, 171, 0.1), transparent),
+    radial-gradient(circle 70px at 85% 70%, rgba(127, 224, 195, 0.1), transparent),
+    radial-gradient(circle 60px at 60% 15%, rgba(255, 224, 138, 0.07), transparent),
+    repeating-linear-gradient(
+      115deg,
+      transparent 0 110px,
+      rgba(255, 182, 213, 0.05) 110px 150px,
+      transparent 150px 280px
+    );
+  animation: sf-cb-shimmer 12s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sf-cb-shimmer {
+  from { transform: translateY(-30px); }
+  to { transform: translateY(30px); }
+}
+
+/* Symbol drop-shadows in the game palette. */
+.sf-machine .sf-cell svg {
+  filter: drop-shadow(0 3px 8px rgba(51, 24, 43, 0.85)) drop-shadow(0 0 6px rgba(255, 143, 171, 0.25));
+}
+
+.sf-machine .sf-cell--win svg {
+  filter: drop-shadow(0 0 12px rgba(255, 224, 138, 0.8));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-machine .sf-backdrop::after { animation: none; }
+}
