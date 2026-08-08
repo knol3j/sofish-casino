@@ -1,0 +1,44 @@
+/* ===========================================================================
+ * games/ocean-treasure/skin.css — Ocean Treasure palette overrides.
+ * Loaded for its side effects by index.ts. Scoped under the game's machine
+ * root via the palette vars the engine already sets; these rules add the
+ * game-specific ambient backdrop and symbol drop-shadows (SPEC §6).
+ * ========================================================================= */
+
+/* Ambient: light rays + rising bubbles feel over the deep-teal abyss. */
+.sf-machine {
+  --sf-game-glow: rgba(23, 162, 184, 0.35);
+}
+
+.sf-machine .sf-backdrop::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    repeating-linear-gradient(
+      105deg,
+      transparent 0 90px,
+      rgba(95, 212, 208, 0.05) 90px 130px,
+      transparent 130px 260px
+    );
+  animation: sf-ot-rays 14s linear infinite;
+  pointer-events: none;
+}
+
+@keyframes sf-ot-rays {
+  from { transform: translateX(-40px); }
+  to { transform: translateX(40px); }
+}
+
+/* Symbol drop-shadows in the game palette. */
+.sf-machine .sf-cell svg {
+  filter: drop-shadow(0 3px 8px rgba(3, 37, 46, 0.9)) drop-shadow(0 0 6px rgba(23, 162, 184, 0.25));
+}
+
+.sf-machine .sf-cell--win svg {
+  filter: drop-shadow(0 0 12px rgba(245, 196, 83, 0.75));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sf-machine .sf-backdrop::after { animation: none; }
+}
