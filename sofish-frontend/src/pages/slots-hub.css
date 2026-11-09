@@ -488,3 +488,44 @@
     transition: none;
   }
 }
+
+/* ---- Live presence badges ---- */
+.sh-card__presence {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 4px 4px;
+  border-radius: 999px;
+  background: rgba(5, 8, 15, 0.72);
+  border: 1px solid color-mix(in srgb, var(--sh-accent, #ffd76a) 35%, transparent);
+  backdrop-filter: blur(6px);
+  z-index: 2;
+}
+.sh-card__presence-avatars {
+  display: flex;
+}
+.sh-card__presence-avatar {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #101623;
+  border: 1.5px solid rgba(255, 255, 255, 0.25);
+  margin-left: -6px;
+}
+.sh-card__presence-avatar:first-child {
+  margin-left: 0;
+}
+.sh-card__presence-count {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: #ffb347;
+  white-space: nowrap;
+}
+.sh-hero__stat--online {
+  color: #4ade80;
+  border-color: color-mix(in srgb, #4ade80 40%, transparent);
+}
